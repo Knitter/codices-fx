@@ -1,0 +1,33 @@
+.menu-icon-button {
+    -fx-text-fill: #929dab;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-font-size: 1em; /* 12 */
+    /*-fx-font-family:"Segoe UI", Helvetica, Arial, sans-serif;*/
+}
+
+/*.button:focused {*/
+/*    -fx-border-color: transparent, black;*/
+/*    -fx-border-width: 1, 1;*/
+/*    -fx-border-style: solid, segments(1, 2);*/
+/*    -fx-border-radius: 0, 0;*/
+/*    -fx-border-insets: 1 1 1 1, 0;*/
+/*}*/
+
+/*.button:pressed {*/
+/*    -fx-background-color: black;*/
+/*    -fx-text-fill: white;*/
+/*}*/
+
+/*
+"-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
+"-fx-outer-border : transparent;" +  // if you don't want a button border.
+"-fx-inner-border : transparent;" +  // if you don't want a button border.
+"-fx-focus-color: transparent;" +  // if you don't want any focus ring.
+"-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
+"-fx-base : palegreen;" +  // if you want a gradient shaded button that lightens on hover and darkens on arming.
+// "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
+"-fx-font-size: 80px;"
+*/
