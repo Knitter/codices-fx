@@ -3,53 +3,109 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
-   <top>
-      <AnchorPane prefHeight="66.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button id="audiobooksBtn" layoutX="14.0" layoutY="66.0" mnemonicParsing="false" text="Audiobooks" textOverrun="CLIP" AnchorPane.leftAnchor="18.0" AnchorPane.topAnchor="14.0">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/vinyl.png" />
-                     </image>
-                  </ImageView>
-               </graphic></Button>
-            <Button id="ebooksBtn" layoutX="141.0" layoutY="66.0" mnemonicParsing="false" text="eBooks" AnchorPane.leftAnchor="146.0" AnchorPane.topAnchor="14.0">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/file-text.png" />
-                     </image>
-                  </ImageView>
-               </graphic></Button>
-            <Button id="booksBtn" layoutX="282.0" layoutY="66.0" mnemonicParsing="false" text="Books" AnchorPane.leftAnchor="249.0" AnchorPane.topAnchor="14.0">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/books.png" />
-                     </image>
-                  </ImageView>
-               </graphic></Button>
-            <Button id="settingsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="534.0" layoutY="14.0" mnemonicParsing="false" textOverrun="CLIP" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="14.0">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/settings.png" />
-                     </image>
-                  </ImageView>
-               </graphic></Button>
-            <Button id="userBtn" contentDisplay="GRAPHIC_ONLY" layoutX="475.0" layoutY="14.0" mnemonicParsing="false" textOverrun="CLIP" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="14.0">
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/user.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button layoutX="545.0" layoutY="22.0" mnemonicParsing="false" text="+" />
-         </children></AnchorPane>
-   </top>
+    <top>
+        <AnchorPane prefHeight="52.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
+            <children>
+                <SegmentedButton AnchorPane.leftAnchor="18.0" AnchorPane.topAnchor="14.0">
+                    <buttons>
+                        <ToggleButton id="audiobooksBtn" mnemonicParsing="false" onAction="#listAudioBooks" text="Audiobooks" textOverrun="CLIP">
+                            <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../icons/vinyl.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton id="ebooksBtn" mnemonicParsing="false" onAction="#listEbooks" text="eBooks">
+                            <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../icons/file-text.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton id="booksBtn" mnemonicParsing="false" onAction="#listPaperBooks" selected="true" text="Books">
+                            <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../icons/books.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </ToggleButton>
+                    </buttons>
+                </SegmentedButton>
+
+                <Button id="addBookBtn" layoutX="370.0" layoutY="22.0" mnemonicParsing="false" text="+" />
+
+                <!-- -->
+                <Button id="authorsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="534.0" layoutY="14.0" mnemonicParsing="false" onAction="#showAuthors" textOverrun="CLIP" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="14.0">
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/ballpen.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip><Tooltip text="Manage Authors" /></tooltip>
+                </Button>
+                <Button id="collectionsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="534.0" layoutY="14.0" mnemonicParsing="false" onAction="#showCollections" textOverrun="CLIP" AnchorPane.leftAnchor="576.0">
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/box-multiple.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip><Tooltip text="Manage Book Collections" /></tooltip>
+                </Button>
+                <Button id="publishersBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="534.0" layoutY="14.0" mnemonicParsing="false" onAction="#showPublishers" textOverrun="CLIP" AnchorPane.leftAnchor="622.0" AnchorPane.topAnchor="14.0">
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/building-store.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip><Tooltip text="Manage Publishers" /></tooltip>
+                </Button>
+                <Button id="seriesBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="534.0" layoutY="14.0" mnemonicParsing="false" onAction="#showSeries" textOverrun="CLIP" AnchorPane.leftAnchor="668.0" AnchorPane.topAnchor="14.0">
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/bookmarks.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip><Tooltip text="Manage Series" /></tooltip>
+                </Button>
+                <!-- -->
+                <Button id="settingsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="534.0" layoutY="14.0" mnemonicParsing="false" onAction="#showSettings" textOverrun="CLIP" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="14.0">
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/settings.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip><Tooltip text="Applications Settings" /></tooltip>
+                </Button>
+            </children>
+        </AnchorPane>
+    </top>
+    <center>
+        <MasterDetailPane id="masterDetailView" fx:id="mainMasterDetailView" detailSide="RIGHT" prefHeight="200.0" prefWidth="200.0" showDetailNode="false" BorderPane.alignment="CENTER">
+            <masterNode>
+                <BorderPane fx:id="contentContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" />
+            </masterNode>
+            <detailNode>
+                <AnchorPane fx:id="detailsContainer" />
+            </detailNode>
+        </MasterDetailPane>
+    </center>
 </BorderPane>
