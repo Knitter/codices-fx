@@ -31,16 +31,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.ImageInput;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.tableview2.FilteredTableView;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainController extends Controller implements Initializable {
+
+    private String showing = "paper";
 
     private FilteredTableView items;
     private ItemRepository itemRepository;
@@ -60,17 +59,30 @@ public class MainController extends Controller implements Initializable {
 
     @FXML
     public void listAudioBooks() {
-        System.out.printf("AudioBooks");
+        if (showing != "audio") {
+            showing = "audio";
+
+            items.getItems().clear();
+            items.getItems().addAll(itemRepository.findAllAudioBooks());
+        }
     }
 
     @FXML
     public void listEbooks() {
-        System.out.println("Ebooks");
+        if (showing != "ebook") {
+            showing = "ebook";
+            items.getItems().clear();
+            items.getItems().addAll(itemRepository.findAllEbooks());
+        }
     }
 
     @FXML
     public void listPaperBooks() {
-        System.out.println("Books");
+        if (showing != "paper") {
+            showing = "paper";
+            items.getItems().clear();
+            items.getItems().addAll(itemRepository.findAllPaperBooks());
+        }
     }
 
     @FXML
@@ -85,31 +97,50 @@ public class MainController extends Controller implements Initializable {
 
     @FXML
     public void showCollections() {
-
+        getManager().showCollectionsWindow();
     }
 
     @FXML
     public void showPublishers() {
-
+        getManager().showPublishersWindow();
     }
 
     @FXML
     public void showSeries() {
-
+        getManager().showSeriesWindow();
     }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         items = new FilteredTableView();
 
-        TableColumn<Item, Integer> firstNameColumn = new TableColumn<>("ID");
-        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        TableColumn<Item, String> lastNameColumn = new TableColumn<>("Title");
-        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        TableColumn<Item, String> col = new TableColumn<>("Title");
+        col.setCellValueFactory(new PropertyValueFactory<>("title"));
+        items.getColumns().add(col);
 
-        items.getColumns().add(firstNameColumn);
-        items.getColumns().add(lastNameColumn);
+        //TODO:
+        //Series
+        //Authors
+        //Genre
 
-        items.getItems().addAll(itemRepository.findAll());
+        col = new TableColumn<>("Format");
+        col.setCellValueFactory(new PropertyValueFactory<>("format"));
+        items.getColumns().add(col);
+
+        col = new TableColumn<>("Language");
+        col.setCellValueFactory(new PropertyValueFactory<>("language"));
+        items.getColumns().add(col);
+
+        col = new TableColumn<>("ISBN");
+        col.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        items.getColumns().add(col);
+
+        //TODO: show checkbox or check icon
+        col = new TableColumn<>("Read?");
+        col.setCellValueFactory(new PropertyValueFactory<>("readLabel"));
+        items.getColumns().add(col);
+
+        items.getItems().addAll(itemRepository.findAllPaperBooks());
         contentContainer.setCenter(items);
     }
 }
