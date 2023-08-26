@@ -37,5 +37,5 @@ Currently used icons are from https://tabler-icons.io/.
 
 # License
 
-Codices is licensed under the MIT Open Source license. Please check the
+Codices is licensed under the MIT license. Please check the
 [LICENSE.txt](https://raw.githubusercontent.com/Knitter/codices-fx/main/LICENSE) file for more information.
