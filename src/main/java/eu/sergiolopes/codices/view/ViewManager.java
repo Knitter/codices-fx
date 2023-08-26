@@ -24,9 +24,8 @@
  */
 package eu.sergiolopes.codices.view;
 
-import eu.sergiolopes.codices.controllers.AuthorController;
-import eu.sergiolopes.codices.controllers.Controller;
-import eu.sergiolopes.codices.controllers.MainController;
+import eu.sergiolopes.codices.controllers.*;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -129,6 +128,18 @@ public class ViewManager {
 
     public void showAuthorWindow() {
         showModal(new AuthorController(this, "authors.fxml"));
+    }
+
+    public void showCollectionsWindow() {
+        showModal(new CollectionController(this, "collections.fxml"));
+    }
+
+    public void showPublishersWindow() {
+        showModal(new PublisherController(this, "publishers.fxml"));
+    }
+
+    public void showSeriesWindow() {
+        showModal(new SeriesController(this, "series.fxml"));
     }
 
     private void showModal(Controller controller) {
