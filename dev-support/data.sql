@@ -1,4 +1,4 @@
-INSERT INTO account (username, email, name, active, password, created_at, updated_at, resetToken)
+INSERT INTO account (username, email, name, active, password, createdAt, updatedAt, resetToken)
 VALUES ('knitter', 'knitter.is@gmai.com', 'Sérgio Lopes', 1, '12345678', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '');
 
 INSERT INTO author(id, name, surname, ownedById)

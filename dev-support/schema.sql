@@ -3,7 +3,7 @@
 -- DROP TABLE collection;
 -- DROP TABLE series;
 -- DROP TABLE account;
-
+-- DROP TABLE author ;
 
 CREATE TABLE account
 (
@@ -13,8 +13,8 @@ CREATE TABLE account
     name       TEXT    NOT NULL,
     active     INTEGER NOT NULL,
     password   TEXT    NOT NULL,
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
     resetToken TEXT    NULL UNIQUE,
     authKey    TEXT
 );
