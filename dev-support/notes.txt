@@ -9,3 +9,43 @@ java.util.Date dt = new java.util.Date();
 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 dt.format(sdf); //?toString?
 primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
+
+Identify missing fields for audiobooks and ebooks (depending on ebook format, focus on epub for first version)
+
+Details/Objects:
+- Publisher [Name, URL, short description]
+- Series [Name, number of books in series, number of owned books in series (could be automatic)]
+- Language
+- ISBN (always 13); maybe allow for ASIN and Google ID
+- Link (for any user provided site, eg. goodreads, amazon)
+- Added on
+- Format (paperback, hard cover, etc.; depends on item type, need a list of common types)
+- Publish date
+- Publish year, for when no date is available
+- No. in series (or just order even if no series was explicitly created)
+- Edition
+- Volume (for paper only?)
+- Plot
+- Review text
+- Genre
+- Info related to translation  (if translated, original title)
+- Flag to mark the book as read
+- Number of owned copies
+- Subtitle (can be useful for non-fiction books)
+- Page count, duration (audio, in minutes), size in KB (both ebook and audio)
+- Audio specific info (eg. bitrate, narrator)
+- Filename for ebooks and audio files
+- Location/path, manually set by user, can be anything from a file path to "calibre library"
+- Store/Seller name (simple text), eg.: Humble Bundle
+- Item type to identify the 3 types of "books" being managed
+- Rating (remove own rating, always own)
+- Cover (front for now, back cover later)
+- Authors (multiple authors per book, don't set a main author, user can just list them by order)
+
+Default UI:
+- Table with list of books, filtered by type (allow a "show all" filter); when selected, show right side panel with main details;
+- On details, offer link/access to other books by the same author, other books in series, other books in collection, other books by same publisher
+- Offer default "Reading List" and "Favorite" collections (remove favorite flag from item details)
+
+Future/Ideas:
+- Add ebook reader and audio player? Audio player would be interesting to have and to develop.
