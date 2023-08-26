@@ -85,9 +85,11 @@ public class AuthorController extends Controller implements Initializable {
                     super.updateItem(author, empty);
                     if (empty || author == null) {
                         setText(null);
-                    } else {
-                        setText(author.getSurname() + ", " + author.getName());
+                        setGraphic(null);
+                        return;
                     }
+
+                    setText(author.getSurname() + ", " + author.getName());
                 }
             };
         });

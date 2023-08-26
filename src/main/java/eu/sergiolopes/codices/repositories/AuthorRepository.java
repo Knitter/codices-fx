@@ -32,8 +32,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class AuthorRepository implements Repository<Author> {
+
+    //TODO: Refactor this, can't use unmodifiableObservables and need to keep some in memory to improve performance
+    // (? maybe only when needed and we have performance hit).
+    //
+    //TODO: Search methods should allow for query/condition parameter and order by clause to be set before SQL is executed
+    //
+    //TODO: Extract column names into getColumns method that can be iterated by repository implementations
 
     private Connection connection;
     private String tableName = "author";
@@ -44,12 +52,26 @@ public class AuthorRepository implements Repository<Author> {
 
     @Override
     public Author find(int id) {
+        String query = "SELECT * FROM " + tableName + " WHERE id = " + id;
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return new Author(rs.getInt("id"), rs.getString("name"),
+                        rs.getInt("ownedById"), rs.getString("surname"),
+                        rs.getString("biography"), rs.getString("website"),
+                        rs.getString("photo"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
     public ObservableList<Author> findAll() {
-        String query = "SELECT * FROM " + tableName;
+        String query = "SELECT * FROM " + tableName + " ORDER BY surname, name";
         ObservableList<Author> authors = FXCollections.observableArrayList();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -69,161 +91,143 @@ public class AuthorRepository implements Repository<Author> {
     }
 
     @Override
-    public ObservableList<Author> list(int page, int offset) {
-        return null;
+    public List<Author> findAllForOwner(int ownerId) {
+        String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY surname, name";
+        ObservableList<Author> authors = FXCollections.observableArrayList();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                authors.add(new Author(rs.getInt("id"), rs.getString("name"),
+                        rs.getInt("ownedById"), rs.getString("surname"),
+                        rs.getString("biography"), rs.getString("website"),
+                        rs.getString("photo")));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return FXCollections.unmodifiableObservableList(authors);
+    }
+
+    @Override
+    public ObservableList<Author> list(int page, int size) {
+        String query = "SELECT * FROM " + tableName + " ORDER BY surname, name LIMIT " + size + " OFFSET " + page;
+        ObservableList<Author> authors = FXCollections.observableArrayList();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                authors.add(new Author(rs.getInt("id"), rs.getString("name"),
+                        rs.getInt("ownedById"), rs.getString("surname"),
+                        rs.getString("biography"), rs.getString("website"),
+                        rs.getString("photo")));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return FXCollections.unmodifiableObservableList(authors);
+    }
+
+    @Override
+    public List<Author> listForOwner(int ownerId, int page, int size) {
+        String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY surname, name LIMIT "
+                + size + " OFFSET " + page;
+
+        ObservableList<Author> authors = FXCollections.observableArrayList();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                authors.add(new Author(rs.getInt("id"), rs.getString("name"),
+                        rs.getInt("ownedById"), rs.getString("surname"),
+                        rs.getString("biography"), rs.getString("website"),
+                        rs.getString("photo")));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return FXCollections.unmodifiableObservableList(authors);
     }
 
     @Override
     public boolean save(Author obj) {
-        return false;
+        if (obj.getId() > 0) {
+            return this.insert(obj);
+        }
+
+        return this.update(obj);
     }
 
-    public boolean create(Author obj) {
-        /*public static long create(String tableName, String[] columns, Object[] values, int[] types) {
-            int number = Math.min(Math.min(columns.length, values.length), types.length);
-            StringBuilder queryBuilder = new StringBuilder("INSERT INTO " + tableName + " (");
-            for (int i = 0; i < number; i++) {
-                queryBuilder.append(columns[i]);
-                if (i < number - 1) queryBuilder.append(", ");
+    public boolean insert(Author obj) {
+        if (obj.getId() > 0) {
+            return false;
+        }
+
+        //TODO: Save photo file/path/binary/whatever
+        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, surname, biography, website, photo) VALUES (?, ?, ?, ?, ?, null)";
+        try {
+            PreparedStatement statement = connection.prepareStatement(insertQry, new String[]{"id"});
+            statement.setString(1, obj.getName());
+            statement.setInt(2, obj.getOwnedById());
+            statement.setString(3, obj.getSurname());
+            statement.setString(4, obj.getBiography());
+            statement.setString(5, obj.getWebsite());
+
+            if (statement.executeUpdate() <= 0) {
+                return false;
             }
-            queryBuilder.append(") ");
-            queryBuilder.append(" VALUES (");
-            for (int i = 0; i < number; i++) {
-                switch (types[i]) {
-                    case Types.VARCHAR:
-                        queryBuilder.append("'");
-                        queryBuilder.append((String) values[i]);
-                        queryBuilder.append("'");
-                        break;
-                    case Types.INTEGER:
-                        queryBuilder.append((int) values[i]);
-                }
-                if (i < number - 1) queryBuilder.append(", ");
+
+            ResultSet keys = statement.getGeneratedKeys();
+            if (keys.next()) {
+                obj.setId(keys.getInt("id"));
             }
-            queryBuilder.append(");");
-            try (Connection conn = Database.connect()) {
-                PreparedStatement pstmt = conn.prepareStatement(queryBuilder.toString());
-                int affectedRows = pstmt.executeUpdate();
-                // check the affected rows
-                if (affectedRows > 0) {
-                    // get the ID back
-                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                        if (rs.next()) {
-                            return rs.getLong(1);
-                        }
-                    }
-                }
-            } catch (SQLException ex) {
-                Logger.getAnonymousLogger().log(
-                        Level.SEVERE,
-                        LocalDateTime.now() + ": Could not add person to database");
-                return -1;
-            }
-            return -1;
-        }*/
+
+            return true;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         return false;
     }
 
     public boolean update(Author obj) {
-        /*public static long update(String tableName, String[] columns, Object[] values, int[] types,
-                                  String indexFieldName, int indexDataType, Object index) {
-            int number = Math.min(Math.min(columns.length, values.length), types.length);
-            StringBuilder queryBuilder = new StringBuilder("UPDATE " + tableName + " SET ");
-            for (int i = 0; i < number; i++) {
-                queryBuilder.append(columns[i]);
-                queryBuilder.append(" = ");
-                queryBuilder.append(convertObjectToSQLField(values[i], types[i]));
-                if (i < number - 1) queryBuilder.append(", ");
-            }
-            queryBuilder.append(" WHERE ");
-            queryBuilder.append(indexFieldName);
-            queryBuilder.append(" = ");
-            queryBuilder.append(convertObjectToSQLField(index, indexDataType));
-            try (Connection conn = Database.connect()) {
-                PreparedStatement pstmt = conn.prepareStatement(queryBuilder.toString());
-                return pstmt.executeUpdate(); //number of affected rows
-            } catch (SQLException ex) {
-                Logger.getAnonymousLogger().log(
-                        Level.SEVERE,
-                        LocalDateTime.now() + ": Could not add person to database");
-                return -1;
-            }
-        }*/
+        if (obj.getId() <= 0) {
+            return false;
+        }
+
+        //TODO: Update photo field
+        String updateQry = "UPDATE " + tableName + " SET name = ?, surname = ?, biography = ?, website = ? WHERE id = " + obj.getId();
+        try {
+            PreparedStatement statement = connection.prepareStatement(updateQry);
+            statement.setString(1, obj.getName());
+            statement.setString(2, obj.getSurname());
+            statement.setString(3, obj.getBiography());
+            statement.setString(4, obj.getWebsite());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean delete(Author obj) {
-        /* String sql = "DELETE FROM " + tableName + " WHERE id = ?";
-            try (Connection conn = Database.connect()) {
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setInt(1, id);
-                return pstmt.executeUpdate();
-            } catch (SQLException e) {
-                Logger.getAnonymousLogger().log(
-                        Level.SEVERE,
-                        LocalDateTime.now() + ": Could not delete from " + tableName + " by id " + id +
-                                " because " + e.getCause());
-                return -1;
-            }*/
+        if (obj.getId() <= 0) {
+            return false;
+        }
 
+        String deleteQry = "DELETE FROM " + tableName + " WHERE id = " + obj.getId();
+        try {
+            PreparedStatement statement = connection.prepareStatement(deleteQry);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         return false;
     }
-
-    /*package com.edencoding.dao;
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-    public class CRUDHelper {
-        public static Object read(String tableName, String fieldName, int fieldDataType,
-                                  String indexFieldName, int indexDataType, Object index) {
-            StringBuilder queryBuilder = new StringBuilder("Select ");
-            queryBuilder.append(fieldName);
-            queryBuilder.append(" from ");
-            queryBuilder.append(tableName);
-            queryBuilder.append(" where ");
-            queryBuilder.append(indexFieldName);
-            queryBuilder.append(" = ");
-            queryBuilder.append(convertObjectToSQLField(index, indexDataType));
-            try (Connection connection = Database.connect()) {
-                PreparedStatement statement = connection.prepareStatement(queryBuilder.toString());
-                try (ResultSet rs = statement.executeQuery()) {
-                    rs.next();
-                    switch (fieldDataType) {
-                        case Types.INTEGER:
-                            return rs.getInt(fieldName);
-                        case Types.VARCHAR:
-                            return rs.getString(fieldName);
-                        default:
-                            throw new IllegalArgumentException("Index type " + indexDataType + " from sql.Types is not yet supported.");
-                    }
-                }
-            } catch (SQLException exception) {
-                Logger.getAnonymousLogger().log(
-                        Level.SEVERE,
-                        LocalDateTime.now() + ": Could not fetch from " + tableName + " by index " + index +
-                                " and column " + fieldName);
-                return null;
-            }
-        }
-
-
-        private static String convertObjectToSQLField(Object value, int type) {
-            StringBuilder queryBuilder = new StringBuilder();
-            switch (type) {
-                case Types.VARCHAR:
-                    queryBuilder.append("'");
-                    queryBuilder.append(value);
-                    queryBuilder.append("'");
-                    break;
-                case Types.INTEGER:
-                    queryBuilder.append(value);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Index type " + type + " from sql.Types is not yet supported.");
-            }
-            return queryBuilder.toString();
-        }
-    }*/
 }

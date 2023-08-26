@@ -26,22 +26,62 @@ package eu.sergiolopes.codices.models;
 
 public class Author {
 
+    /**
+     * Record's primary key. When 0 (zero) the record has not been saved to storage and exists only in memory.
+     */
     private int id;
+
+    /**
+     *
+     */
     private String name;
+
+    /**
+     *
+     */
     private int ownedById;  //FOREIGN KEY (ownedById) REFERENCES account (id)
+
+    /**
+     *
+     */
     private String surname;
+
+    /**
+     *
+     */
     private String biography;
+
+    /**
+     *
+     */
     private String website;
+
+    /**
+     * //TODO: needs review; was used to store file path in server version, won't work in desktop version
+     */
     private String photo;
 
+    /**
+     * Creates a new Author using default values for most fields.
+     *
+     * @param name      Author's first name.
+     * @param ownedById ID of the account that owns this record.
+     */
     public Author(String name, int ownedById) {
-        this(name, "", ownedById);
+        this(0, name, ownedById, null, null, null, null);
     }
 
-    public Author(String name, String surname, int ownedById) {
-        this(0, name, ownedById, surname, null, null, null);
-    }
-
+    /**
+     * Creates a new Author, allowing for all properties to be set when instantiating the object.
+     *
+     * @param id        Record's ID, used as primary key by storage (sqlite, mysql, etc.).
+     * @param name      Author's first name.
+     * @param ownedById ID of the account that owns this record.
+     * @param surname   Author's last name, usually shown to users.
+     * @param biography Biography text.
+     * @param website   URL to the author's website
+     * @param photo
+     */
     public Author(int id, String name, int ownedById, String surname, String biography, String website, String photo) {
         this.id = id;
         this.name = name;

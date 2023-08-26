@@ -128,11 +128,12 @@ public class ViewManager {
     }
 
     public void showAuthorWindow() {
-        //TODO: Extract into reusable + share with this.initialize()
-        var controller = new AuthorController(this, "authors.fxml");
-        URL path = getClass().getResource("authors.fxml");
+        showModal(new AuthorController(this, "authors.fxml"));
+    }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(path);
+    private void showModal(Controller controller) {
+        //TODO: share with this.initialize()
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(controller.getFxml()));
         fxmlLoader.setController(controller);
         Parent parent;
         try {
