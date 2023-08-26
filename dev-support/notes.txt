@@ -1,0 +1,11 @@
+Moving from Yii2 to JavaFX; Keep:
+- Current main fields, 1-to-1 publisher, 1-to-1 series, ISBN, many-to-many authors, many-to-many genre; not sure about tags;
+- Consider adding price per book and per collection
+- Would custom fields be useful? Maybe version 2.
+- For ebooks and audiobooks, link(?) to files (may need a user directory, somewhere in user's home?)
+- Allow for back cover also? may for 1.5 or 2.0
+
+java.util.Date dt = new java.util.Date();
+java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+dt.format(sdf); //?toString?
+primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
