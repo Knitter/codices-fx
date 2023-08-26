@@ -1,9 +1,13 @@
--- DROP TABLE item;
--- DROP TABLE publisher;
--- DROP TABLE collection;
--- DROP TABLE series;
--- DROP TABLE account;
--- DROP TABLE author ;
+DROP TABLE IF EXISTS item_genre;
+DROP TABLE IF EXISTS item_author;
+DROP TABLE IF EXISTS item;
+DROP TABLE IF EXISTS publisher;
+DROP TABLE IF EXISTS collection;
+DROP TABLE IF EXISTS series;
+DROP TABLE IF EXISTS author;
+DROP TABLE IF EXISTS genre;
+DROP TABLE IF EXISTS format;
+DROP TABLE IF EXISTS account;
 
 CREATE TABLE account
 (
@@ -13,8 +17,8 @@ CREATE TABLE account
     name       TEXT    NOT NULL,
     active     INTEGER NOT NULL,
     password   TEXT    NOT NULL,
-    createdAt INTEGER NOT NULL,
-    updatedAt INTEGER NOT NULL,
+    createdAt  INTEGER NOT NULL,
+    updatedAt  INTEGER NOT NULL,
     resetToken TEXT    NULL UNIQUE,
     authKey    TEXT
 );
@@ -26,7 +30,6 @@ CREATE TABLE publisher
     ownedById INTEGER NOT NULL,
     summary   TEXT,
     website   TEXT,
-    logo      TEXT,
     FOREIGN KEY (ownedById) REFERENCES account (id)
 );
 
@@ -35,7 +38,7 @@ CREATE TABLE series
     id         INTEGER PRIMARY KEY,
     name       TEXT    NOT NULL,
     ownedById  INTEGER NOT NULL,
-    completed   INTEGER NOT NULL,
+    completed  INTEGER NOT NULL,
     bookCount  INTEGER,
     ownedCount INTEGER,
     FOREIGN KEY (ownedById) REFERENCES account (id)
@@ -64,15 +67,31 @@ CREATE TABLE author
     FOREIGN KEY (ownedById) REFERENCES account (id)
 );
 
--- A paper book, ebook or audio book
+CREATE TABLE genre
+(
+    id        INTEGER PRIMARY KEY,
+    name      TEXT    NOT NULL,
+    ownedById INTEGER NOT NULL,
+    FOREIGN KEY (ownedById) REFERENCES account (id)
+);
+
+CREATE TABLE format
+(
+    type      TEXT    NOT NULL,
+    name      TEXT    NOT NULL,
+    ownedById INTEGER NOT NULL,
+    PRIMARY KEY (type, name, ownedById),
+    FOREIGN KEY (ownedById) REFERENCES account (id)
+);
+
+-- A paper book, ebook or audio book managed by Codiges-fx
 CREATE TABLE item
 (
     id            INTEGER PRIMARY KEY,
     title         TEXT    NOT NULL,
     ownedById     INTEGER NOT NULL,
-    type          TEXT    NOT NULL, -- ebook, audio, paper
+    type          TEXT    NOT NULL, -- "ebook", "audio", "paper"
     translated    INTEGER NOT NULL,
-    favorite      INTEGER NOT NULL,
     read          INTEGER NOT NULL,
     copies        INTEGER NOT NULL,
     subtitle      TEXT,
@@ -86,15 +105,18 @@ CREATE TABLE item
     addedOn       TEXT,
     language      TEXT,
     edition       TEXT,
-    rating        REAL,
-    ownRating     REAL,
+    volume        TEXT,
+    rating        INTEGER,
     url           TEXT,
     review        TEXT,
     cover         TEXT,
     filename      TEXT,
+    fileLocation  TEXT,
     narrator      TEXT,
+    bitrate       TEXT,
     boughtFrom    TEXT,
-    duration      INTEGER,          -- minutes
+    duration      INTEGER,          -- in minutes
+    sizeBytes     INTEGER,          -- in KB
     orderInSeries INTEGER,
     publisherId   INTEGER,
     seriesId      INTEGER,
@@ -106,3 +128,21 @@ CREATE TABLE item
     FOREIGN KEY (collectionId) REFERENCES collection (id),
     FOREIGN KEY (duplicatesId) REFERENCES item (id)
 );
+
+CREATE TABLE item_author
+(
+    itemId   INTEGER NOT NULL,
+    authorId INTEGER NOT NULL,
+    PRIMARY KEY (itemId, authorId),
+    FOREIGN KEY (itemId) REFERENCES item (id),
+    FOREIGN KEY (authorId) REFERENCES author (id)
+)
+
+CREATE TABLE item_genre
+(
+    itemId  INTEGER NOT NULL,
+    genreId INTEGER NOT NULL,
+    PRIMARY KEY (itemId, genreId),
+    FOREIGN KEY (itemId) REFERENCES item (id),
+    FOREIGN KEY (genreId) REFERENCES genre (id)
+)
