@@ -40,13 +40,10 @@ public class SeriesController extends Controller implements Initializable {
 
     @FXML
     private ListView<Series> series;
-
     @FXML
     private TextField name;
     @FXML
     private Spinner<Integer> bookCount;
-    @FXML
-    private Spinner<Integer> ownedCount;
     @FXML
     private CheckBox completed;
 
@@ -63,7 +60,6 @@ public class SeriesController extends Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         bookCount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 2000));
-        ownedCount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 2000));
 
         series.setCellFactory(param -> {
             //TODO: handle update and pending changes
@@ -87,7 +83,6 @@ public class SeriesController extends Controller implements Initializable {
 
             name.setText(selected.getName());
             bookCount.getValueFactory().setValue(selected.getBookCount());
-            ownedCount.getValueFactory().setValue(selected.getOwnedCount());
             completed.setSelected(selected.isCompleted());
         });
 
@@ -96,7 +91,6 @@ public class SeriesController extends Controller implements Initializable {
 
             name.setText(first.getName());
             bookCount.getValueFactory().setValue(first.getBookCount());
-            ownedCount.getValueFactory().setValue(first.getOwnedCount());
             completed.setSelected(first.isCompleted());
 
             series.getSelectionModel().selectFirst();
@@ -108,7 +102,6 @@ public class SeriesController extends Controller implements Initializable {
         //series.getItems().add(new Series("<new series>", 1));
         name.setText("");
         bookCount.getValueFactory().setValue(0);
-        ownedCount.getValueFactory().setValue(0);
         completed.setSelected(false);
 
         series.getSelectionModel().selectLast();
@@ -126,5 +119,9 @@ public class SeriesController extends Controller implements Initializable {
 
     public void closeWindow() {
         getManager().closeCurrentStage();
+    }
+
+    public void search() {
+
     }
 }

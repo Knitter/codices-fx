@@ -123,7 +123,7 @@ public class CollectionController extends Controller implements Initializable {
         getManager().closeCurrentStage();
     }
 
-    public void changePhoto() {
-        //TODO: upload photo and mark dirty
+    public void search() {
+        //TODO: ...
     }
 }

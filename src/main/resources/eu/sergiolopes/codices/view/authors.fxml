@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 MIT License
 
@@ -29,58 +30,70 @@ SOFTWARE.
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0"
-            prefWidth="940.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="936.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
     <left>
-        <ListView fx:id="authors" prefHeight="400.0" prefWidth="280.0" BorderPane.alignment="CENTER"/>
+        <ListView fx:id="authors" prefHeight="400.0" prefWidth="280.0" BorderPane.alignment="CENTER" />
     </left>
     <center>
         <AnchorPane prefHeight="400.0" prefWidth="554.0" BorderPane.alignment="CENTER">
             <children>
-                <Label layoutX="14.0" layoutY="17.0" text="First Name" AnchorPane.leftAnchor="14.0"
-                       AnchorPane.topAnchor="14.0"/>
-                <Label layoutX="224.0" layoutY="14.0" text="Surname" AnchorPane.leftAnchor="224.0"
-                       AnchorPane.topAnchor="14.0"/>
-                <Label layoutX="21.0" layoutY="75.0" text="Website" AnchorPane.leftAnchor="14.0"
-                       AnchorPane.topAnchor="69.0"/>
-                <Label layoutX="45.0" layoutY="228.0" text="Biography" AnchorPane.leftAnchor="14.0"
-                       AnchorPane.topAnchor="124.0"/>
-                <ImageView fx:id="photo" fitHeight="212.0" fitWidth="212.0" layoutX="478.0" layoutY="11.0"
-                           pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="434.0"
-                           AnchorPane.topAnchor="14.0"/>
-                <TextField fx:id="firstName" layoutX="15.0" layoutY="36.0" prefHeight="25.0" prefWidth="200.0"
-                           AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="36.0"/>
-                <TextField fx:id="surname" layoutX="229.0" layoutY="36.0" prefWidth="200.0"
-                           AnchorPane.leftAnchor="224.0"/>
-                <TextField fx:id="website" layoutX="14.0" layoutY="92.0" prefHeight="25.0" prefWidth="410.0"
-                           AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="91.0"/>
-                <TextArea fx:id="biography" layoutX="21.0" layoutY="258.0" prefHeight="230.0" prefWidth="410.0"
-                          AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="146.0"/>
-                <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="386.0" prefWidth="409.0" spacing="5.0"
-                      AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="386.0">
-                    <children>
-                        <Button mnemonicParsing="false" onAction="#addAuthor" text="Add"/>
+                <Label layoutX="14.0" layoutY="17.0" text="First Name" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="14.0" />
+                <Label layoutX="224.0" layoutY="14.0" text="Surname" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="14.0" />
+                <Label layoutX="21.0" layoutY="75.0" text="Website" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="69.0" />
+                <Label layoutX="45.0" layoutY="228.0" text="Biography" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="124.0" />
+                <ImageView fx:id="photo" fitHeight="198.0" fitWidth="198.0" layoutX="478.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="430.0" AnchorPane.topAnchor="14.0" />
+                <TextField fx:id="firstName" layoutX="15.0" layoutY="36.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="36.0" />
+                <TextField fx:id="surname" layoutX="229.0" layoutY="36.0" prefWidth="200.0" AnchorPane.leftAnchor="220.0" />
+                <TextField fx:id="website" layoutX="14.0" layoutY="92.0" prefHeight="25.0" prefWidth="410.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="91.0" />
+                <TextArea fx:id="biography" layoutX="21.0" layoutY="258.0" prefHeight="240.0" prefWidth="410.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="146.0" />
+                <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="386.0" prefWidth="409.0" spacing="5.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="386.0" />
+                <Button fx:id="changePhoto" layoutX="540.0" layoutY="249.0" mnemonicParsing="false" onAction="#changePhoto" text="Change Photo ..." AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="222.0" />
+            </children>
+        </AnchorPane>
+    </center>
+   <bottom>
+      <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
+         <children>
+            <HBox fillHeight="false" prefWidth="280.0">
+               <children>
+                  <TextField fx:id="searchField" onAction="#search" promptText="Search ..." HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+             <HBox spacing="10.0" HBox.hgrow="ALWAYS">
+               <children>
+                        <Button mnemonicParsing="false" onAction="#addAuthor" text="Add" />
                         <Button fx:id="deleteSelected" mnemonicParsing="false" onAction="#deleteSelected" text="Delete">
                             <HBox.margin>
-                                <Insets/>
+                                <Insets />
                             </HBox.margin>
                         </Button>
+               </children>
+               <padding>
+                  <Insets left="10.0" />
+               </padding></HBox>
+             <HBox alignment="CENTER_RIGHT" spacing="10.0">
+               <children>
                         <Button mnemonicParsing="false" onAction="#saveChanges" text="Save">
                             <HBox.margin>
-                                <Insets left="100.0"/>
+                                <Insets left="100.0" />
                             </HBox.margin>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#closeWindow" text="Close">
                             <HBox.margin>
-                                <Insets/>
+                                <Insets />
                             </HBox.margin>
                         </Button>
-                    </children>
-                </HBox>
-                <Button fx:id="changePhoto" layoutX="540.0" layoutY="249.0" mnemonicParsing="false"
-                        onAction="#changePhoto" text="Change Photo ..." AnchorPane.rightAnchor="14.0"
-                        AnchorPane.topAnchor="231.0"/>
-            </children>
-        </AnchorPane>
-    </center>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets></HBox>
+         </children>
+         <padding>
+            <Insets bottom="5.0" right="14.0" top="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <padding>
+      <Insets left="14.0" />
+   </padding>
 </BorderPane>

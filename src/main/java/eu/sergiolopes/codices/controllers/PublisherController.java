@@ -138,7 +138,7 @@ public class PublisherController extends Controller implements Initializable {
         getManager().closeCurrentStage();
     }
 
-    public void changeLogo() {
-        //TODO: upload photo and mark dirty
+    public void search() {
+        //TODO: ...
     }
 }

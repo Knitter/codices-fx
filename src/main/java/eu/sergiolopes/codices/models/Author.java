@@ -147,4 +147,16 @@ public class Author {
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
+    public String getFullName() {
+        if (name != null && !name.isBlank() && surname != null && !surname.isBlank()) {
+            return surname + ", " + name;
+        }
+
+        if (name != null && !name.isBlank()) {
+            return name;
+        }
+
+        return surname;
+    }
 }

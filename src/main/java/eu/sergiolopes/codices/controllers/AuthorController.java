@@ -44,7 +44,6 @@ public class AuthorController extends Controller implements Initializable {
 
     @FXML
     private ListView<Author> authors;
-
     @FXML
     private ImageView photo;
     @FXML
@@ -55,6 +54,8 @@ public class AuthorController extends Controller implements Initializable {
     private TextField website;
     @FXML
     private TextArea biography;
+    @FXML
+    private TextField searchField;
 
     public AuthorController(ViewManager vm, String fxml) {
         super(vm, fxml);
@@ -89,13 +90,16 @@ public class AuthorController extends Controller implements Initializable {
                         return;
                     }
 
-                    setText(author.getSurname() + ", " + author.getName());
+                    setText(author.getFullName());
                 }
             };
         });
         authors.setItems(authorRepository.findAll());
         authors.setOnMouseClicked(event -> {
-            var selected = authors.getSelectionModel().getSelectedItem();
+            Author selected = authors.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                return;
+            }
 
             firstName.setText(selected.getName());
             surname.setText(selected.getSurname());
@@ -117,7 +121,7 @@ public class AuthorController extends Controller implements Initializable {
     public void addAuthor() {
         //TODO: set proper owner account
         authors.getItems().add(new Author("<new author>", 1));
-        firstName.setText("");
+        firstName.setText("<new author>");
         surname.setText("");
         website.setText("");
         biography.setText("");
@@ -131,11 +135,17 @@ public class AuthorController extends Controller implements Initializable {
     }
 
     public void saveChanges() {
-//        firstName.setText("");
-//        surname.setText("");
-//        website.setText("");
-//        biography.setText("");
-        authorRepository.save(null);
+        Author selected = authors.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            return;
+        }
+
+        selected.setName(firstName.getText().trim());
+        selected.setSurname(surname.getText().trim());
+        selected.setWebsite(website.getText().trim());
+        selected.setBiography(biography.getText().trim());
+
+        authorRepository.save(selected);
     }
 
     public void closeWindow() {
@@ -144,5 +154,9 @@ public class AuthorController extends Controller implements Initializable {
 
     public void changePhoto() {
         //TODO: upload photo and mark dirty
+    }
+
+    public void search() {
+
     }
 }
