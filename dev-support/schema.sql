@@ -11,16 +11,15 @@ DROP TABLE IF EXISTS account;
 
 CREATE TABLE account
 (
-    id         INTEGER PRIMARY KEY,
-    username   TEXT    NOT NULL UNIQUE,
-    email      TEXT    NOT NULL,
-    name       TEXT    NOT NULL,
-    active     INTEGER NOT NULL,
-    password   TEXT    NOT NULL,
-    createdAt  INTEGER NOT NULL,
-    updatedAt  INTEGER NOT NULL,
-    resetToken TEXT    NULL UNIQUE,
-    authKey    TEXT
+    id        INTEGER PRIMARY KEY,
+    username  TEXT    NOT NULL UNIQUE,
+    email     TEXT    NOT NULL,
+    name      TEXT    NOT NULL,
+    active    INTEGER NOT NULL,
+    password  TEXT    NOT NULL,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    authKey   TEXT
 );
 
 CREATE TABLE publisher
@@ -136,7 +135,7 @@ CREATE TABLE item_author
     PRIMARY KEY (itemId, authorId),
     FOREIGN KEY (itemId) REFERENCES item (id),
     FOREIGN KEY (authorId) REFERENCES author (id)
-)
+);
 
 CREATE TABLE item_genre
 (
@@ -145,4 +144,4 @@ CREATE TABLE item_genre
     PRIMARY KEY (itemId, genreId),
     FOREIGN KEY (itemId) REFERENCES item (id),
     FOREIGN KEY (genreId) REFERENCES genre (id)
-)
+);
