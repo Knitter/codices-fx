@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AuthorRepository implements Repository<Author> {
@@ -72,7 +73,7 @@ public class AuthorRepository implements Repository<Author> {
     @Override
     public ObservableList<Author> findAll() {
         String query = "SELECT * FROM " + tableName + " ORDER BY surname, name";
-        ObservableList<Author> authors = FXCollections.observableArrayList();
+        List<Author> authors = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
@@ -87,7 +88,7 @@ public class AuthorRepository implements Repository<Author> {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(authors);
+        return FXCollections.observableList(authors);
     }
 
     @Override

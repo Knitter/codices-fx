@@ -66,7 +66,7 @@ SOFTWARE.
                 </buttons>
             </SegmentedButton>
 
-            <HBox alignment="CENTER">
+            <HBox alignment="CENTER" spacing="5.0">
                 <Button id="authorsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#showAuthors" textOverrun="CLIP">
                     <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
@@ -120,7 +120,7 @@ SOFTWARE.
             <TextField fx:id="searchField" promptText="Search ..." />
 
             <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-                <Button id="settingsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#showSettings" textOverrun="CLIP">
+                <Button id="settingsBtn" contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="0.0" mnemonicParsing="false" onAction="#showSettings" textOverrun="CLIP">
                     <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                             <image>
