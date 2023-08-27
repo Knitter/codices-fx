@@ -157,7 +157,7 @@ public class AuthorRepository implements Repository<Author> {
 
     @Override
     public boolean save(Author obj) {
-        if (obj.getId() > 0) {
+        if (obj.getId() <= 0) {
             return this.insert(obj);
         }
 

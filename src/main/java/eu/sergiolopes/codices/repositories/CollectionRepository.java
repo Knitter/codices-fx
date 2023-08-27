@@ -145,7 +145,7 @@ public class CollectionRepository implements Repository<Collection> {
 
     @Override
     public boolean save(Collection obj) {
-        if (obj.getId() > 0) {
+        if (obj.getId() <= 0) {
             return this.insert(obj);
         }
 

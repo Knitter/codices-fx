@@ -144,7 +144,7 @@ public class SeriesRepository implements Repository<Series> {
 
     @Override
     public boolean save(Series obj) {
-        if (obj.getId() > 0) {
+        if (obj.getId() <= 0) {
             return this.insert(obj);
         }
 

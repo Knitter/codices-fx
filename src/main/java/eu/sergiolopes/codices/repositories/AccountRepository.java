@@ -114,7 +114,7 @@ public class AccountRepository implements Repository<Account> {
 
     @Override
     public boolean save(Account obj) {
-        if (obj.getId() > 0) {
+        if (obj.getId() <= 0) {
             return this.insert(obj);
         }
 

@@ -189,7 +189,7 @@ public class ItemRepository implements Repository<Item> {
     }
 
     public boolean insert(Item obj) {
-        if (obj.getId() > 0) {
+        if (obj.getId() <= 0) {
             return false;
         }
 
