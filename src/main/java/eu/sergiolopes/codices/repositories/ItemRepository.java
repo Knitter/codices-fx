@@ -24,18 +24,21 @@
  */
 package eu.sergiolopes.codices.repositories;
 
-import eu.sergiolopes.codices.models.Item;
+import eu.sergiolopes.codices.models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemRepository implements Repository<Item> {
 
+    private static final String relatedAuthorsQry = "SELECT a.* FROM author AS a INNER JOIN item_author AS ia ON a.id = ia.authorId WHERE itemId = ? ORDER BY surname, name";
+    private static final String relatedGenresQry = "SELECT g.* FROM genre AS g INNER JOIN item_genre AS ig ON g.id = ig.genreId WHERE itemId = ? ORDER BY g.name";
+    private static final String relatedPublisherQry = "SELECT * FROM publisher WHERE id = ?";
+    private static final String relatedCollectionQry = "SELECT * FROM collection WHERE id = ?";
+    private static final String relatedSeriesQry = "SELECT * FROM series WHERE id = ?";
     private Connection connection;
     private String tableName = "item";
 
@@ -45,22 +48,89 @@ public class ItemRepository implements Repository<Item> {
 
     @Override
     public Item find(int id) {
-        String query = "SELECT * FROM " + tableName + " WHERE id = " + id;
+        String itemQry = "SELECT * FROM " + tableName + " WHERE id = " + id;
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                //TODO: Related data (account, series, collection, authors, publisher)
-                return new Item(rs.getInt("id"), rs.getString("title"), rs.getString("type"),
-                        rs.getInt("translated") == 1, rs.getInt("favorite") == 1,
-                        rs.getInt("read") == 1, rs.getInt("copies"), rs.getString("subtitle"),
-                        rs.getString("originalTitle"), rs.getString("plot"), rs.getString("isbn"),
-                        rs.getString("format"), rs.getInt("pageCount"), rs.getInt("publishYear"),
-                        rs.getString("language"), rs.getString("edition"), rs.getFloat("rating"),
-                        rs.getFloat("ownRating"), rs.getString("url"), rs.getString("review"),
-                        rs.getString("cover"), rs.getString("filename"), rs.getString("narrator"),
-                        rs.getString("boughtFrom"), rs.getInt("duration"), rs.getInt("orderInSeries")
-                );
+            PreparedStatement itemStatement = connection.prepareStatement(itemQry);
+            ResultSet itemRs = itemStatement.executeQuery();
+            if (itemRs.next()) {
+                Item item = new Item(itemRs.getInt("id"), itemRs.getString("title"),
+                        ItemType.fromString(itemRs.getString("type")),
+                        itemRs.getInt("translated") == 1, itemRs.getInt("read") == 1,
+                        itemRs.getInt("copies"), itemRs.getString("subtitle"),
+                        itemRs.getString("originalTitle"), itemRs.getString("plot"),
+                        itemRs.getString("isbn"), itemRs.getString("format"),
+                        itemRs.getInt("pageCount"), itemRs.getString("publishDate"),
+                        itemRs.getInt("publishYear"), itemRs.getString("addedOn"),
+                        itemRs.getString("language"), itemRs.getString("edition"),
+                        itemRs.getString("volume"), itemRs.getFloat("rating"),
+                        itemRs.getString("url"), itemRs.getString("review"),
+                        itemRs.getString("cover"), itemRs.getString("filename"),
+                        itemRs.getString("fileLocation"), itemRs.getString("narrator"),
+                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
+                        itemRs.getInt("orderInSeries"));
+
+                int relId = itemRs.getInt("publisherId");
+                if (relId > 0) {
+                    PreparedStatement pubStatement = connection.prepareStatement(relatedPublisherQry);
+                    pubStatement.setInt(1, id);
+                    ResultSet pubRs = pubStatement.executeQuery();
+                    if (pubRs.next()) {
+                        item.setPublisher(new Publisher(pubRs.getInt("id"), pubRs.getString("name"),
+                                pubRs.getString("summary"), pubRs.getString("website")));
+                    }
+                }
+
+                relId = itemRs.getInt("seriesId");
+                if (relId > 0) {
+                    PreparedStatement seriesStatement = connection.prepareStatement(relatedSeriesQry);
+                    seriesStatement.setInt(1, id);
+                    ResultSet seriesRs = seriesStatement.executeQuery();
+                    if (seriesRs.next()) {
+                        item.setSeries(new Series(seriesRs.getInt("id"), seriesRs.getString("name"),
+                                seriesRs.getInt("completed") == 1, seriesRs.getInt("bookCount"),
+                                seriesRs.getInt("ownedCount")));
+                    }
+                }
+
+                relId = itemRs.getInt("collectionId");
+                if (relId > 0) {
+                    PreparedStatement colStatement = connection.prepareStatement(relatedCollectionQry);
+                    colStatement.setInt(1, id);
+                    ResultSet colRs = colStatement.executeQuery();
+                    if (colRs.next()) {
+                        item.setCollection(new Collection(colRs.getInt("id"), colRs.getString("name"),
+                                colRs.getString("publishDate"), colRs.getInt("publishYear"),
+                                colRs.getString("description")));
+                    }
+                }
+
+                //relId = rs.getInt("duplicatesId");
+                //if(relId > 0) {
+                //PreparedStatement relStatement = connection.prepareStatement();
+                //ResultSet relRs = statement.executeQuery();
+                //if (relRs.next()) {
+                //TODO ...
+                //}
+
+                List<Author> authors = new ArrayList<>();
+                PreparedStatement authorsStatement = connection.prepareStatement(relatedAuthorsQry);
+                authorsStatement.setInt(1, id);
+                ResultSet authorsRs = authorsStatement.executeQuery();
+                while (authorsRs.next()) {
+                    authors.add(new Author(authorsRs.getInt("id"), authorsRs.getString("name"),
+                            authorsRs.getString("surname"), authorsRs.getString("biography"),
+                            authorsRs.getString("website")));
+                }
+                item.setAuthors(authors);
+
+                List<Genre> genres = new ArrayList<>();
+                PreparedStatement genresStatement = connection.prepareStatement(relatedGenresQry);
+                genresStatement.setInt(1, id);
+                ResultSet genresRs = genresStatement.executeQuery();
+                while (genresRs.next()) {
+                    genres.add(new Genre(genresRs.getInt("id"), genresRs.getString("name")));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,117 +141,413 @@ public class ItemRepository implements Repository<Item> {
 
     @Override
     public ObservableList<Item> findAll() {
-        String query = "SELECT * FROM " + tableName + " ORDER BY title";
-        ObservableList<Item> items = FXCollections.observableArrayList();
+        String itemQry = "SELECT * FROM " + tableName + " ORDER BY title";
+        List<Item> items = new ArrayList<>();
+        List<Author> authors = new ArrayList<>();
+        List<Genre> genres = new ArrayList<>();
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                items.add(new Item(rs.getInt("id"), rs.getString("title"), rs.getString("type"),
-                        rs.getInt("translated") == 1, rs.getInt("favorite") == 1,
-                        rs.getInt("read") == 1, rs.getInt("copies"), rs.getString("subtitle"),
-                        rs.getString("originalTitle"), rs.getString("plot"), rs.getString("isbn"),
-                        rs.getString("format"), rs.getInt("pageCount"), rs.getInt("publishYear"),
-                        rs.getString("language"), rs.getString("edition"), rs.getFloat("rating"),
-                        rs.getFloat("ownRating"), rs.getString("url"), rs.getString("review"),
-                        rs.getString("cover"), rs.getString("filename"), rs.getString("narrator"),
-                        rs.getString("boughtFrom"), rs.getInt("duration"), rs.getInt("orderInSeries")
-                ));
+            PreparedStatement itemStatement = connection.prepareStatement(itemQry);
+            ResultSet itemRs = itemStatement.executeQuery();
+
+            Item item;
+            while (itemRs.next()) {
+                item = new Item(itemRs.getInt("id"), itemRs.getString("title"),
+                        ItemType.fromString(itemRs.getString("type")),
+                        itemRs.getInt("translated") == 1, itemRs.getInt("read") == 1,
+                        itemRs.getInt("copies"), itemRs.getString("subtitle"),
+                        itemRs.getString("originalTitle"), itemRs.getString("plot"),
+                        itemRs.getString("isbn"), itemRs.getString("format"),
+                        itemRs.getInt("pageCount"), itemRs.getString("publishDate"),
+                        itemRs.getInt("publishYear"), itemRs.getString("addedOn"),
+                        itemRs.getString("language"), itemRs.getString("edition"),
+                        itemRs.getString("volume"), itemRs.getFloat("rating"),
+                        itemRs.getString("url"), itemRs.getString("review"),
+                        itemRs.getString("cover"), itemRs.getString("filename"),
+                        itemRs.getString("fileLocation"), itemRs.getString("narrator"),
+                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
+                        itemRs.getInt("orderInSeries"));
+
+                int relId = itemRs.getInt("publisherId");
+                if (relId > 0) {
+                    PreparedStatement pubStatement = connection.prepareStatement(relatedPublisherQry);
+                    pubStatement.setInt(1, item.getId());
+                    ResultSet pubRs = pubStatement.executeQuery();
+                    if (pubRs.next()) {
+                        item.setPublisher(new Publisher(pubRs.getInt("id"), pubRs.getString("name"),
+                                pubRs.getString("summary"), pubRs.getString("website")));
+                    }
+                }
+
+                relId = itemRs.getInt("seriesId");
+                if (relId > 0) {
+                    PreparedStatement seriesStatement = connection.prepareStatement(relatedSeriesQry);
+                    seriesStatement.setInt(1, item.getId());
+                    ResultSet seriesRs = seriesStatement.executeQuery();
+                    if (seriesRs.next()) {
+                        item.setSeries(new Series(seriesRs.getInt("id"), seriesRs.getString("name"),
+                                seriesRs.getInt("completed") == 1, seriesRs.getInt("bookCount"),
+                                seriesRs.getInt("ownedCount")));
+                    }
+                }
+
+                relId = itemRs.getInt("collectionId");
+                if (relId > 0) {
+                    PreparedStatement colStatement = connection.prepareStatement(relatedCollectionQry);
+                    colStatement.setInt(1, item.getId());
+                    ResultSet colRs = colStatement.executeQuery();
+                    if (colRs.next()) {
+                        item.setCollection(new Collection(colRs.getInt("id"), colRs.getString("name"),
+                                colRs.getString("publishDate"), colRs.getInt("publishYear"),
+                                colRs.getString("description")));
+                    }
+                }
+
+                //relId = rs.getInt("duplicatesId");
+                //if(relId > 0) {
+                //PreparedStatement relStatement = connection.prepareStatement();
+                //ResultSet relRs = statement.executeQuery();
+                //if (relRs.next()) {
+                //TODO ...
+                //}
+
+                authors.clear();
+                PreparedStatement authorsStatement = connection.prepareStatement(relatedAuthorsQry);
+                authorsStatement.setInt(1, item.getId());
+                ResultSet authorsRs = authorsStatement.executeQuery();
+                while (authorsRs.next()) {
+                    authors.add(new Author(authorsRs.getInt("id"), authorsRs.getString("name"),
+                            authorsRs.getString("surname"), authorsRs.getString("biography"),
+                            authorsRs.getString("website")));
+                }
+                item.setAuthors(authors);
+
+                genres.clear();
+                PreparedStatement genresStatement = connection.prepareStatement(relatedGenresQry);
+                genresStatement.setInt(1, item.getId());
+                ResultSet genresRs = genresStatement.executeQuery();
+                while (genresRs.next()) {
+                    genres.add(new Genre(genresRs.getInt("id"), genresRs.getString("name")));
+                }
+
+                items.add(item);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(items);
+        return FXCollections.observableList(items);
     }
 
     @Override
     public List<Item> findAllForOwner(int ownerId) {
-        String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY title";
-        ObservableList<Item> items = FXCollections.observableArrayList();
+        String itemQry = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY title";
+        List<Item> items = new ArrayList<>();
+        List<Author> authors = new ArrayList<>();
+        List<Genre> genres = new ArrayList<>();
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                items.add(new Item(rs.getInt("id"), rs.getString("title"), rs.getString("type"),
-                        rs.getInt("translated") == 1, rs.getInt("favorite") == 1,
-                        rs.getInt("read") == 1, rs.getInt("copies"), rs.getString("subtitle"),
-                        rs.getString("originalTitle"), rs.getString("plot"), rs.getString("isbn"),
-                        rs.getString("format"), rs.getInt("pageCount"), rs.getInt("publishYear"),
-                        rs.getString("language"), rs.getString("edition"), rs.getFloat("rating"),
-                        rs.getFloat("ownRating"), rs.getString("url"), rs.getString("review"),
-                        rs.getString("cover"), rs.getString("filename"), rs.getString("narrator"),
-                        rs.getString("boughtFrom"), rs.getInt("duration"), rs.getInt("orderInSeries")
-                ));
+            PreparedStatement itemStatement = connection.prepareStatement(itemQry);
+            ResultSet itemRs = itemStatement.executeQuery();
+
+            Item item;
+            while (itemRs.next()) {
+                item = new Item(itemRs.getInt("id"), itemRs.getString("title"),
+                        ItemType.fromString(itemRs.getString("type")),
+                        itemRs.getInt("translated") == 1, itemRs.getInt("read") == 1,
+                        itemRs.getInt("copies"), itemRs.getString("subtitle"),
+                        itemRs.getString("originalTitle"), itemRs.getString("plot"),
+                        itemRs.getString("isbn"), itemRs.getString("format"),
+                        itemRs.getInt("pageCount"), itemRs.getString("publishDate"),
+                        itemRs.getInt("publishYear"), itemRs.getString("addedOn"),
+                        itemRs.getString("language"), itemRs.getString("edition"),
+                        itemRs.getString("volume"), itemRs.getFloat("rating"),
+                        itemRs.getString("url"), itemRs.getString("review"),
+                        itemRs.getString("cover"), itemRs.getString("filename"),
+                        itemRs.getString("fileLocation"), itemRs.getString("narrator"),
+                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
+                        itemRs.getInt("orderInSeries"));
+
+                int relId = itemRs.getInt("publisherId");
+                if (relId > 0) {
+                    PreparedStatement pubStatement = connection.prepareStatement(relatedPublisherQry);
+                    pubStatement.setInt(1, item.getId());
+                    ResultSet pubRs = pubStatement.executeQuery();
+                    if (pubRs.next()) {
+                        item.setPublisher(new Publisher(pubRs.getInt("id"), pubRs.getString("name"),
+                                pubRs.getString("summary"), pubRs.getString("website")));
+                    }
+                }
+
+                relId = itemRs.getInt("seriesId");
+                if (relId > 0) {
+                    PreparedStatement seriesStatement = connection.prepareStatement(relatedSeriesQry);
+                    seriesStatement.setInt(1, item.getId());
+                    ResultSet seriesRs = seriesStatement.executeQuery();
+                    if (seriesRs.next()) {
+                        item.setSeries(new Series(seriesRs.getInt("id"), seriesRs.getString("name"),
+                                seriesRs.getInt("completed") == 1, seriesRs.getInt("bookCount"),
+                                seriesRs.getInt("ownedCount")));
+                    }
+                }
+
+                relId = itemRs.getInt("collectionId");
+                if (relId > 0) {
+                    PreparedStatement colStatement = connection.prepareStatement(relatedCollectionQry);
+                    colStatement.setInt(1, item.getId());
+                    ResultSet colRs = colStatement.executeQuery();
+                    if (colRs.next()) {
+                        item.setCollection(new Collection(colRs.getInt("id"), colRs.getString("name"),
+                                colRs.getString("publishDate"), colRs.getInt("publishYear"),
+                                colRs.getString("description")));
+                    }
+                }
+
+                //relId = rs.getInt("duplicatesId");
+                //if(relId > 0) {
+                //PreparedStatement relStatement = connection.prepareStatement();
+                //ResultSet relRs = statement.executeQuery();
+                //if (relRs.next()) {
+                //TODO ...
+                //}
+
+                authors.clear();
+                PreparedStatement authorsStatement = connection.prepareStatement(relatedAuthorsQry);
+                authorsStatement.setInt(1, item.getId());
+                ResultSet authorsRs = authorsStatement.executeQuery();
+                while (authorsRs.next()) {
+                    authors.add(new Author(authorsRs.getInt("id"), authorsRs.getString("name"),
+                            authorsRs.getString("surname"), authorsRs.getString("biography"),
+                            authorsRs.getString("website")));
+                }
+                item.setAuthors(authors);
+
+                genres.clear();
+                PreparedStatement genresStatement = connection.prepareStatement(relatedGenresQry);
+                genresStatement.setInt(1, item.getId());
+                ResultSet genresRs = genresStatement.executeQuery();
+                while (genresRs.next()) {
+                    genres.add(new Genre(genresRs.getInt("id"), genresRs.getString("name")));
+                }
+
+                items.add(item);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(items);
+        return FXCollections.observableList(items);
     }
 
     @Override
     public ObservableList<Item> list(int page, int size) {
-        String query = "SELECT * FROM " + tableName + " ORDER BY title LIMIT " + size + " OFFSET " + page;
-        ObservableList<Item> items = FXCollections.observableArrayList();
+        String itemQry = "SELECT * FROM " + tableName + " ORDER BY title LIMIT " + size + " OFFSET " + page;
+        List<Item> items = new ArrayList<>();
+        List<Author> authors = new ArrayList<>();
+        List<Genre> genres = new ArrayList<>();
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                items.add(new Item(rs.getInt("id"), rs.getString("title"), rs.getString("type"),
-                        rs.getInt("translated") == 1, rs.getInt("favorite") == 1,
-                        rs.getInt("read") == 1, rs.getInt("copies"), rs.getString("subtitle"),
-                        rs.getString("originalTitle"), rs.getString("plot"), rs.getString("isbn"),
-                        rs.getString("format"), rs.getInt("pageCount"), rs.getInt("publishYear"),
-                        rs.getString("language"), rs.getString("edition"), rs.getFloat("rating"),
-                        rs.getFloat("ownRating"), rs.getString("url"), rs.getString("review"),
-                        rs.getString("cover"), rs.getString("filename"), rs.getString("narrator"),
-                        rs.getString("boughtFrom"), rs.getInt("duration"), rs.getInt("orderInSeries")
-                ));
+            PreparedStatement itemStatement = connection.prepareStatement(itemQry);
+            ResultSet itemRs = itemStatement.executeQuery();
+
+            Item item;
+            while (itemRs.next()) {
+                item = new Item(itemRs.getInt("id"), itemRs.getString("title"),
+                        ItemType.fromString(itemRs.getString("type")),
+                        itemRs.getInt("translated") == 1, itemRs.getInt("read") == 1,
+                        itemRs.getInt("copies"), itemRs.getString("subtitle"),
+                        itemRs.getString("originalTitle"), itemRs.getString("plot"),
+                        itemRs.getString("isbn"), itemRs.getString("format"),
+                        itemRs.getInt("pageCount"), itemRs.getString("publishDate"),
+                        itemRs.getInt("publishYear"), itemRs.getString("addedOn"),
+                        itemRs.getString("language"), itemRs.getString("edition"),
+                        itemRs.getString("volume"), itemRs.getFloat("rating"),
+                        itemRs.getString("url"), itemRs.getString("review"),
+                        itemRs.getString("cover"), itemRs.getString("filename"),
+                        itemRs.getString("fileLocation"), itemRs.getString("narrator"),
+                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
+                        itemRs.getInt("orderInSeries"));
+
+                int relId = itemRs.getInt("publisherId");
+                if (relId > 0) {
+                    PreparedStatement pubStatement = connection.prepareStatement(relatedPublisherQry);
+                    pubStatement.setInt(1, item.getId());
+                    ResultSet pubRs = pubStatement.executeQuery();
+                    if (pubRs.next()) {
+                        item.setPublisher(new Publisher(pubRs.getInt("id"), pubRs.getString("name"),
+                                pubRs.getString("summary"), pubRs.getString("website")));
+                    }
+                }
+
+                relId = itemRs.getInt("seriesId");
+                if (relId > 0) {
+                    PreparedStatement seriesStatement = connection.prepareStatement(relatedSeriesQry);
+                    seriesStatement.setInt(1, item.getId());
+                    ResultSet seriesRs = seriesStatement.executeQuery();
+                    if (seriesRs.next()) {
+                        item.setSeries(new Series(seriesRs.getInt("id"), seriesRs.getString("name"),
+                                seriesRs.getInt("completed") == 1, seriesRs.getInt("bookCount"),
+                                seriesRs.getInt("ownedCount")));
+                    }
+                }
+
+                relId = itemRs.getInt("collectionId");
+                if (relId > 0) {
+                    PreparedStatement colStatement = connection.prepareStatement(relatedCollectionQry);
+                    colStatement.setInt(1, item.getId());
+                    ResultSet colRs = colStatement.executeQuery();
+                    if (colRs.next()) {
+                        item.setCollection(new Collection(colRs.getInt("id"), colRs.getString("name"),
+                                colRs.getString("publishDate"), colRs.getInt("publishYear"),
+                                colRs.getString("description")));
+                    }
+                }
+
+                //relId = rs.getInt("duplicatesId");
+                //if(relId > 0) {
+                //PreparedStatement relStatement = connection.prepareStatement();
+                //ResultSet relRs = statement.executeQuery();
+                //if (relRs.next()) {
+                //TODO ...
+                //}
+
+                authors.clear();
+                PreparedStatement authorsStatement = connection.prepareStatement(relatedAuthorsQry);
+                authorsStatement.setInt(1, item.getId());
+                ResultSet authorsRs = authorsStatement.executeQuery();
+                while (authorsRs.next()) {
+                    authors.add(new Author(authorsRs.getInt("id"), authorsRs.getString("name"),
+                            authorsRs.getString("surname"), authorsRs.getString("biography"),
+                            authorsRs.getString("website")));
+                }
+                item.setAuthors(authors);
+
+                genres.clear();
+                PreparedStatement genresStatement = connection.prepareStatement(relatedGenresQry);
+                genresStatement.setInt(1, item.getId());
+                ResultSet genresRs = genresStatement.executeQuery();
+                while (genresRs.next()) {
+                    genres.add(new Genre(genresRs.getInt("id"), genresRs.getString("name")));
+                }
+
+                items.add(item);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(items);
+        return FXCollections.observableList(items);
     }
 
     @Override
     public List<Item> listForOwner(int ownerId, int page, int size) {
-        String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY title LIMIT "
+        String itemQry = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY title LIMIT "
                 + size + " OFFSET " + page;
 
-        ObservableList<Item> items = FXCollections.observableArrayList();
+        List<Item> items = new ArrayList<>();
+        List<Author> authors = new ArrayList<>();
+        List<Genre> genres = new ArrayList<>();
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                items.add(new Item(rs.getInt("id"), rs.getString("title"), rs.getString("type"),
-                        rs.getInt("translated") == 1, rs.getInt("favorite") == 1,
-                        rs.getInt("read") == 1, rs.getInt("copies"), rs.getString("subtitle"),
-                        rs.getString("originalTitle"), rs.getString("plot"), rs.getString("isbn"),
-                        rs.getString("format"), rs.getInt("pageCount"), rs.getInt("publishYear"),
-                        rs.getString("language"), rs.getString("edition"), rs.getFloat("rating"),
-                        rs.getFloat("ownRating"), rs.getString("url"), rs.getString("review"),
-                        rs.getString("cover"), rs.getString("filename"), rs.getString("narrator"),
-                        rs.getString("boughtFrom"), rs.getInt("duration"), rs.getInt("orderInSeries")
-                ));
+            PreparedStatement itemStatement = connection.prepareStatement(itemQry);
+            ResultSet itemRs = itemStatement.executeQuery();
+
+            Item item;
+            while (itemRs.next()) {
+                item = new Item(itemRs.getInt("id"), itemRs.getString("title"),
+                        ItemType.fromString(itemRs.getString("type")),
+                        itemRs.getInt("translated") == 1, itemRs.getInt("read") == 1,
+                        itemRs.getInt("copies"), itemRs.getString("subtitle"),
+                        itemRs.getString("originalTitle"), itemRs.getString("plot"),
+                        itemRs.getString("isbn"), itemRs.getString("format"),
+                        itemRs.getInt("pageCount"), itemRs.getString("publishDate"),
+                        itemRs.getInt("publishYear"), itemRs.getString("addedOn"),
+                        itemRs.getString("language"), itemRs.getString("edition"),
+                        itemRs.getString("volume"), itemRs.getFloat("rating"),
+                        itemRs.getString("url"), itemRs.getString("review"),
+                        itemRs.getString("cover"), itemRs.getString("filename"),
+                        itemRs.getString("fileLocation"), itemRs.getString("narrator"),
+                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
+                        itemRs.getInt("orderInSeries"));
+
+                int relId = itemRs.getInt("publisherId");
+                if (relId > 0) {
+                    PreparedStatement pubStatement = connection.prepareStatement(relatedPublisherQry);
+                    pubStatement.setInt(1, item.getId());
+                    ResultSet pubRs = pubStatement.executeQuery();
+                    if (pubRs.next()) {
+                        item.setPublisher(new Publisher(pubRs.getInt("id"), pubRs.getString("name"),
+                                pubRs.getString("summary"), pubRs.getString("website")));
+                    }
+                }
+
+                relId = itemRs.getInt("seriesId");
+                if (relId > 0) {
+                    PreparedStatement seriesStatement = connection.prepareStatement(relatedSeriesQry);
+                    seriesStatement.setInt(1, item.getId());
+                    ResultSet seriesRs = seriesStatement.executeQuery();
+                    if (seriesRs.next()) {
+                        item.setSeries(new Series(seriesRs.getInt("id"), seriesRs.getString("name"),
+                                seriesRs.getInt("completed") == 1, seriesRs.getInt("bookCount"),
+                                seriesRs.getInt("ownedCount")));
+                    }
+                }
+
+                relId = itemRs.getInt("collectionId");
+                if (relId > 0) {
+                    PreparedStatement colStatement = connection.prepareStatement(relatedCollectionQry);
+                    colStatement.setInt(1, item.getId());
+                    ResultSet colRs = colStatement.executeQuery();
+                    if (colRs.next()) {
+                        item.setCollection(new Collection(colRs.getInt("id"), colRs.getString("name"),
+                                colRs.getString("publishDate"), colRs.getInt("publishYear"),
+                                colRs.getString("description")));
+                    }
+                }
+
+                //relId = rs.getInt("duplicatesId");
+                //if(relId > 0) {
+                //PreparedStatement relStatement = connection.prepareStatement();
+                //ResultSet relRs = statement.executeQuery();
+                //if (relRs.next()) {
+                //TODO ...
+                //}
+
+                authors.clear();
+                PreparedStatement authorsStatement = connection.prepareStatement(relatedAuthorsQry);
+                authorsStatement.setInt(1, item.getId());
+                ResultSet authorsRs = authorsStatement.executeQuery();
+                while (authorsRs.next()) {
+                    authors.add(new Author(authorsRs.getInt("id"), authorsRs.getString("name"),
+                            authorsRs.getString("surname"), authorsRs.getString("biography"),
+                            authorsRs.getString("website")));
+                }
+                item.setAuthors(authors);
+
+                genres.clear();
+                PreparedStatement genresStatement = connection.prepareStatement(relatedGenresQry);
+                genresStatement.setInt(1, item.getId());
+                ResultSet genresRs = genresStatement.executeQuery();
+                while (genresRs.next()) {
+                    genres.add(new Genre(genresRs.getInt("id"), genresRs.getString("name")));
+                }
+
+                items.add(item);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(items);
+        return FXCollections.observableList(items);
     }
 
     @Override
     public boolean save(Item obj) {
-        if (obj.getId() > 0) {
+        if (obj.getId() <= 0) {
             return this.insert(obj);
         }
 
@@ -189,45 +555,62 @@ public class ItemRepository implements Repository<Item> {
     }
 
     public boolean insert(Item obj) {
-        if (obj.getId() <= 0) {
+        if (obj.getId() > 0) {
             return false;
         }
 
-        //TODO: Save photo file/path/binary/whatever
-        String insertQry = "INSERT INTO " + tableName + "(title, ownedById, type, translated, favorite, read, copies, "
-                + "subtitle, originalTitle, plot, isbn, format, pageCount, publishDate, publishYear, addedOn, language, "
-                + "edition, rating, ownRating, url, review, cover, filename, narrator, boughtFrom, duration, orderInSeries, "
-                + "publisherId, seriesId, collectionId, duplicatesId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                + "CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, null, ?, ?, ?, ?, ?, null, null, null, null)";
+        String insertQry = "INSERT INTO " + tableName + "(title, ownedById, type, translated, read,copies, subtitle, "
+                + "originalTitle, plot,isbn, format,pageCount,  publishDate, publishYear, addedOn, language, edition, "
+                + "volume, rating, url, review, cover, filename, fileLocation, narrator, bitrate, boughtFrom, duration, "
+                + "sizeBytes, orderInSeries, publisherId, seriesId, collectionId, duplicatesId) VALUES (?, 1, ?, ?, "
+                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)";
         try {
             PreparedStatement statement = connection.prepareStatement(insertQry, new String[]{"id"});
 
             statement.setString(1, obj.getTitle());
-            statement.setInt(2, 1);
-            statement.setString(3, obj.getType());
-            statement.setInt(4, obj.isTranslated() ? 1 : 0);
-            statement.setInt(5, obj.isFavorite() ? 1 : 0);
-            statement.setInt(6, obj.isRead() ? 1 : 0);
-            statement.setInt(7, obj.getCopies());
-            statement.setString(8, obj.getSubtitle());
-            statement.setString(9, obj.getOriginalTitle());
-            statement.setString(10, obj.getPlot());
-            statement.setString(11, obj.getIsbn());
-            statement.setString(12, obj.getFormat());
-            statement.setInt(13, obj.getPageCount());
-            statement.setString(14, obj.getPublishDate());
-            statement.setInt(15, obj.getPublishYear());
-            statement.setString(16, obj.getLanguage());
-            statement.setString(17, obj.getEdition());
-            statement.setFloat(18, obj.getRating());
-            statement.setFloat(19, obj.getOwnRating());
-            statement.setString(20, obj.getUrl());
-            statement.setString(21, obj.getReview());
-            statement.setString(22, obj.getFilename());
-            statement.setString(23, obj.getNarrator());
-            statement.setString(24, obj.getBoughtFrom());
-            statement.setInt(25, obj.getDuration());
+            statement.setString(2, obj.getType().getType());
+            statement.setInt(3, obj.isTranslated() ? 1 : 0);
+            statement.setInt(4, obj.isRead() ? 1 : 0);
+            statement.setInt(5, obj.getCopies());
+            statement.setString(6, obj.getSubtitle());
+            statement.setString(7, obj.getOriginalTitle());
+            statement.setString(8, obj.getPlot());
+            statement.setString(9, obj.getIsbn());
+            statement.setString(10, obj.getFormat());
+            statement.setInt(11, obj.getPageCount());
+            statement.setString(12, obj.getPublishDate());
+            statement.setInt(13, obj.getPublishYear());
+            statement.setString(14, obj.getLanguage());
+            statement.setString(15, obj.getEdition());
+            statement.setString(16, obj.getVolume());
+            statement.setFloat(17, obj.getRating());
+            statement.setString(18, obj.getUrl());
+            statement.setString(19, obj.getReview());
+            statement.setString(20, obj.getFilename());
+            statement.setString(21, obj.getFileLocation());
+            statement.setString(22, obj.getNarrator());
+            statement.setString(23, obj.getBoughtFrom());
+            statement.setInt(24, obj.getDuration());
+            statement.setInt(25, obj.getSizeBytes());
             statement.setInt(26, obj.getOrderInSeries());
+
+            if (obj.getPublisher() != null) {
+                statement.setInt(27, obj.getPublisher().getId());
+            } else {
+                statement.setNull(27, Types.INTEGER);
+            }
+
+            if (obj.getSeries() != null) {
+                statement.setInt(28, obj.getSeries().getId());
+            } else {
+                statement.setNull(28, Types.INTEGER);
+            }
+
+            if (obj.getCollection() != null) {
+                statement.setInt(29, obj.getCollection().getId());
+            } else {
+                statement.setNull(29, Types.INTEGER);
+            }
 
             if (statement.executeUpdate() <= 0) {
                 return false;
@@ -237,6 +620,7 @@ public class ItemRepository implements Repository<Item> {
             if (keys.next()) {
                 obj.setId(keys.getInt("id"));
             }
+            //TODO: authors + genres
 
             return true;
         } catch (SQLException ex) {
@@ -250,16 +634,16 @@ public class ItemRepository implements Repository<Item> {
             return false;
         }
 
-        //TODO: Update photo field
-        String updateQry = "UPDATE " + tableName + " SET title = ?, translated = ?, favorite = ?, read = ?, copies = ?, "
-                + "subtitle = ?, originalTitle = ?, plot = ?, isbn = ?, format = ?, pageCount = ?, publishDate = ?, "
-                + "publishYear = ?, language = ?, edition = ?, rating = ?, ownRating = ?, url = ?, review = ?, filename = ?, "
-                + "narrator = ?, boughtFrom = ?, duration = ?, orderInSeries = ? WHERE id = " + obj.getId();
+        String updateQry = "UPDATE " + tableName + " SET title = ?, type = ?, translated = ?, read = ?, copies = ?, subtitle = ?, "
+                + "originalTitle = ?, plot = ?, isbn = ?, format = ?, pageCount = ?, publishDate = ?, publishYear = ?, "
+                + "language = ?, edition = ?, volume = ?, rating = ?, url = ?, review = ?, filename = ?, fileLocation = ?, "
+                + "narrator = ?, bitrate = ?, boughtFrom = ?, duration = ?, sizeBytes = ?, orderInSeries = ?, publisherId = ?,"
+                + "seriesId = ?,  collectionId = ? WHERE id = " + obj.getId();
         try {
             PreparedStatement statement = connection.prepareStatement(updateQry);
             statement.setString(1, obj.getTitle());
-            statement.setInt(2, obj.isTranslated() ? 1 : 0);
-            statement.setInt(3, obj.isFavorite() ? 1 : 0);
+            statement.setString(2, obj.getType().getType());
+            statement.setInt(3, obj.isTranslated() ? 1 : 0);
             statement.setInt(4, obj.isRead() ? 1 : 0);
             statement.setInt(5, obj.getCopies());
             statement.setString(6, obj.getSubtitle());
@@ -272,15 +656,35 @@ public class ItemRepository implements Repository<Item> {
             statement.setInt(13, obj.getPublishYear());
             statement.setString(14, obj.getLanguage());
             statement.setString(15, obj.getEdition());
-            statement.setFloat(16, obj.getRating());
-            statement.setFloat(17, obj.getOwnRating());
+            statement.setString(16, obj.getVolume());
+            statement.setFloat(17, obj.getRating());
             statement.setString(18, obj.getUrl());
             statement.setString(19, obj.getReview());
             statement.setString(20, obj.getFilename());
-            statement.setString(21, obj.getNarrator());
-            statement.setString(22, obj.getBoughtFrom());
-            statement.setInt(23, obj.getDuration());
-            statement.setInt(24, obj.getOrderInSeries());
+            statement.setString(21, obj.getFileLocation());
+            statement.setString(22, obj.getNarrator());
+            statement.setString(23, obj.getBoughtFrom());
+            statement.setInt(24, obj.getDuration());
+            statement.setInt(25, obj.getSizeBytes());
+            statement.setInt(26, obj.getOrderInSeries());
+
+            if (obj.getPublisher() != null) {
+                statement.setInt(27, obj.getPublisher().getId());
+            } else {
+                statement.setNull(27, Types.INTEGER);
+            }
+
+            if (obj.getSeries() != null) {
+                statement.setInt(28, obj.getSeries().getId());
+            } else {
+                statement.setNull(28, Types.INTEGER);
+            }
+
+            if (obj.getCollection() != null) {
+                statement.setInt(29, obj.getCollection().getId());
+            } else {
+                statement.setNull(29, Types.INTEGER);
+            }
 
             return statement.executeUpdate() > 0;
         } catch (SQLException ex) {
@@ -319,59 +723,106 @@ public class ItemRepository implements Repository<Item> {
     }
 
     private ObservableList<Item> findAllByType(String type) {
-        //TODO: Make type into ENUM
-        ObservableList<Item> items = FXCollections.observableArrayList();
+        List<Item> items = new ArrayList<>();
+        //TODO: ...
         if (type != "paper" && type != "ebook" && type != "audio") {
-            return FXCollections.unmodifiableObservableList(items);
+            return FXCollections.observableList(items);
         }
 
-        String query = "SELECT * FROM " + tableName + " WHERE type = ?  ORDER BY title";
+        String itemQry = "SELECT * FROM " + tableName + " WHERE type = ?  ORDER BY title";
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, type);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                items.add(new Item(rs.getInt("id"), rs.getString("title"), rs.getString("type"),
-                        rs.getInt("translated") == 1, rs.getInt("favorite") == 1,
-                        rs.getInt("read") == 1, rs.getInt("copies"), rs.getString("subtitle"),
-                        rs.getString("originalTitle"), rs.getString("plot"), rs.getString("isbn"),
-                        rs.getString("format"), rs.getInt("pageCount"), rs.getInt("publishYear"),
-                        rs.getString("language"), rs.getString("edition"), rs.getFloat("rating"),
-                        rs.getFloat("ownRating"), rs.getString("url"), rs.getString("review"),
-                        rs.getString("cover"), rs.getString("filename"), rs.getString("narrator"),
-                        rs.getString("boughtFrom"), rs.getInt("duration"), rs.getInt("orderInSeries")
-                ));
+            PreparedStatement itemStatement = connection.prepareStatement(itemQry);
+            itemStatement.setString(1, type);
+            ResultSet itemRs = itemStatement.executeQuery();
+
+            Item item;
+            while (itemRs.next()) {
+                item = new Item(itemRs.getInt("id"), itemRs.getString("title"),
+                        ItemType.fromString(itemRs.getString("type")),
+                        itemRs.getInt("translated") == 1, itemRs.getInt("read") == 1,
+                        itemRs.getInt("copies"), itemRs.getString("subtitle"),
+                        itemRs.getString("originalTitle"), itemRs.getString("plot"),
+                        itemRs.getString("isbn"), itemRs.getString("format"),
+                        itemRs.getInt("pageCount"), itemRs.getString("publishDate"),
+                        itemRs.getInt("publishYear"), itemRs.getString("addedOn"),
+                        itemRs.getString("language"), itemRs.getString("edition"),
+                        itemRs.getString("volume"), itemRs.getFloat("rating"),
+                        itemRs.getString("url"), itemRs.getString("review"),
+                        itemRs.getString("cover"), itemRs.getString("filename"),
+                        itemRs.getString("fileLocation"), itemRs.getString("narrator"),
+                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
+                        itemRs.getInt("orderInSeries"));
+
+                int relId = itemRs.getInt("publisherId");
+                if (relId > 0) {
+                    PreparedStatement pubStatement = connection.prepareStatement(relatedPublisherQry);
+                    pubStatement.setInt(1, item.getId());
+                    ResultSet pubRs = pubStatement.executeQuery();
+                    if (pubRs.next()) {
+                        item.setPublisher(new Publisher(pubRs.getInt("id"), pubRs.getString("name"),
+                                pubRs.getString("summary"), pubRs.getString("website")));
+                    }
+                }
+
+                relId = itemRs.getInt("seriesId");
+                if (relId > 0) {
+                    PreparedStatement seriesStatement = connection.prepareStatement(relatedSeriesQry);
+                    seriesStatement.setInt(1, item.getId());
+                    ResultSet seriesRs = seriesStatement.executeQuery();
+                    if (seriesRs.next()) {
+                        item.setSeries(new Series(seriesRs.getInt("id"), seriesRs.getString("name"),
+                                seriesRs.getInt("completed") == 1, seriesRs.getInt("bookCount"),
+                                seriesRs.getInt("ownedCount")));
+                    }
+                }
+
+                relId = itemRs.getInt("collectionId");
+                if (relId > 0) {
+                    PreparedStatement colStatement = connection.prepareStatement(relatedCollectionQry);
+                    colStatement.setInt(1, item.getId());
+                    ResultSet colRs = colStatement.executeQuery();
+                    if (colRs.next()) {
+                        item.setCollection(new Collection(colRs.getInt("id"), colRs.getString("name"),
+                                colRs.getString("publishDate"), colRs.getInt("publishYear"),
+                                colRs.getString("description")));
+                    }
+                }
+
+                //relId = rs.getInt("duplicatesId");
+                //if(relId > 0) {
+                //PreparedStatement relStatement = connection.prepareStatement();
+                //ResultSet relRs = statement.executeQuery();
+                //if (relRs.next()) {
+                //TODO ...
+                //}
+
+                List<Author> authors = new ArrayList<>();
+                PreparedStatement authorsStatement = connection.prepareStatement(relatedAuthorsQry);
+                authorsStatement.setInt(1, item.getId());
+                ResultSet authorsRs = authorsStatement.executeQuery();
+                while (authorsRs.next()) {
+                    authors.add(new Author(authorsRs.getInt("id"), authorsRs.getString("name"),
+                            authorsRs.getString("surname"), authorsRs.getString("biography"),
+                            authorsRs.getString("website")));
+                }
+                item.setAuthors(authors);
+
+                List<Genre> genres = new ArrayList<>();
+                PreparedStatement genresStatement = connection.prepareStatement(relatedGenresQry);
+                genresStatement.setInt(1, item.getId());
+                ResultSet genresRs = genresStatement.executeQuery();
+                while (genresRs.next()) {
+                    genres.add(new Genre(genresRs.getInt("id"), genresRs.getString("name")));
+                }
+
+                items.add(item);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(items);
+        return FXCollections.observableList(items);
     }
-//    @Override
-//    public ObservableList<Item> findAll() {
-//        String query = "SELECT * FROM " + tableName;
-//        ObservableList<Item> items = FXCollections.observableArrayList();
-//        try {
-//            PreparedStatement statement = connection.prepareStatement(query);
-//            ResultSet rs = statement.executeQuery();
-//            while (rs.next()) {
-//
-////                items.add();
-//            }
-//
-//            /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//    String ts = sdf.format(timestamp);*/
-//        } catch (SQLException e) {
-////            Logger.getAnonymousLogger().log(
-////                    Level.SEVERE,
-////                    LocalDateTime.now() + ": Could not load Persons from database ");
-////            persons.clear();
-//        }
-//
-//        return FXCollections.unmodifiableObservableList(items);
-//    }
-
 }

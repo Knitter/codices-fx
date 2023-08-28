@@ -129,16 +129,16 @@ SOFTWARE.
                         </ImageView>
                     </graphic>
                     <tooltip>
-                        <Tooltip text="Applications Settings" />
+                        <Tooltip text="Application Settings" />
                     </tooltip>
                 </Button>
             </HBox>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="10.0" left="14.0" right="14.0" top="10.0" />
-         </padding>
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+            <padding>
+                <Insets bottom="10.0" left="14.0" right="14.0" top="10.0" />
+            </padding>
         </HBox>
     </top>
     <center>

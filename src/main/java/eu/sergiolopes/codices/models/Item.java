@@ -24,68 +24,184 @@
  */
 package eu.sergiolopes.codices.models;
 
+import java.util.List;
+
 public class Item {
 
     /**
      * Record's primary key. When 0 (zero) the record has not been saved to storage and exists only in memory.
      */
     private int id;
+
+    /**
+     *
+     */
     private String title;
 
     /**
      * The type of item: paper book (paper), eBook file (ebook), Audio Book file (audio)
      */
-    private String type; // --ebook,audio,paper
+    private ItemType type;
+
+    /**
+     *
+     */
     private boolean translated;
-    private boolean favorite;
+
+    /**
+     * Flag, marks this book as having been read.
+     */
     private boolean read;
+
+    /**
+     *
+     */
     private int copies;
+
+    /**
+     *
+     */
     private String subtitle;
+
+    /**
+     *
+     */
     private String originalTitle;
+
+    /**
+     *
+     */
     private String plot;
+
+    /**
+     *
+     */
     private String isbn;
+
+    /**
+     *
+     */
     private String format;
+
+    /*
+
+     */
     private int pageCount;
+
+    /**
+     *
+     */
     private String publishDate;
+
+    /**
+     *
+     */
     private int publishYear;
+
+    /**
+     *
+     */
     private String addedOn;
+
+    /**
+     *
+     */
     private String language;
+
+    /**
+     *
+     */
     private String edition;
+
+    /**
+     *
+     */
+    private String volume;
+
+    /**
+     *
+     */
     private float rating;
-    private float ownRating;
+
+    /**
+     *
+     */
     private String url;
+
+    /**
+     *
+     */
     private String review;
+
+    /**
+     *
+     */
     private String cover;
+
+    /**
+     *
+     */
     private String filename;
+
+    /**
+     *
+     */
+    private String fileLocation;
+
+    /**
+     *
+     */
     private String narrator;
+
+    /**
+     *
+     */
+    private String bitrate;
+
+    /**
+     *
+     */
     private String boughtFrom;
+
+    /**
+     *
+     */
+    private int sizeBytes;
 
     /**
      * Duration of an audiobook, in minutes.
      */
     private int duration;
+
+    /**
+     *
+     */
     private int orderInSeries;
 
-    private Account account;
-
+    private List<Author> authors;
     private Publisher publisher;
     private Series series;
     private Collection collection;
     private Item duplicate;
+    private List<Genre> genres;
 
-    //type          TEXT    NOT NULL, -- ebook, audio, paper
-    public Item(int id, String title, String type, boolean translated, boolean favorite, boolean read) {
-        this(id, title, type, translated, favorite, read, 1, null, null, null, null,
-                null, 0, 0, null, null, 0, 0, null,
-                null, null, null, null, null, 0, 0);
+    public Item(String title, ItemType type) {
+        this(0, title, type, false, false, 1, null, null, null, null,
+                null, 0, null, 0, null, null, null,
+                null, 0, null, null, null, null, null, null,
+                null, null, 0, 0, 1);
     }
 
-    public Item(int id, String title, String type, boolean translated, boolean favorite, boolean read, int copies, String subtitle, String originalTitle, String plot, String isbn, String format, int pageCount, int publishYear, String language, String edition, float rating, float ownRating, String url, String review, String cover, String filename, String narrator, String boughtFrom, int duration, int orderInSeries) {
+    public Item(int id, String title, ItemType type, boolean translated, boolean read, int copies, String subtitle,
+                String originalTitle, String plot, String isbn, String format, int pageCount, String publishDate,
+                int publishYear, String addedOn, String language, String edition, String volume, float rating, String url,
+                String review, String cover, String filename, String fileLocation, String narrator, String bitrate,
+                String boughtFrom, int sizeBytes, int duration, int orderInSeries) {
+
         this.id = id;
         this.title = title;
         this.type = type;
         this.translated = translated;
-        this.favorite = favorite;
         this.read = read;
         this.copies = copies;
         this.subtitle = subtitle;
@@ -94,75 +210,28 @@ public class Item {
         this.isbn = isbn;
         this.format = format;
         this.pageCount = pageCount;
+        this.publishDate = publishDate;
         this.publishYear = publishYear;
+        this.addedOn = addedOn;
         this.language = language;
         this.edition = edition;
+        this.volume = volume;
         this.rating = rating;
-        this.ownRating = ownRating;
         this.url = url;
         this.review = review;
         this.cover = cover;
         this.filename = filename;
+        this.fileLocation = fileLocation;
         this.narrator = narrator;
+        this.bitrate = bitrate;
         this.boughtFrom = boughtFrom;
+        this.sizeBytes = sizeBytes;
         this.duration = duration;
         this.orderInSeries = orderInSeries;
     }
 
-    private Account getAccount() {
-        return account;
-    }
-
-    private void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public String getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(String publishDate) {
-        this.publishDate = publishDate;
-    }
-
-    public String getAddedOn() {
-        return addedOn;
-    }
-
-    public void setAddedOn(String addedOn) {
-        this.addedOn = addedOn;
-    }
-
-    public Publisher getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
-    public Series getSeries() {
-        return series;
-    }
-
-    public void setSeries(Series series) {
-        this.series = series;
-    }
-
-    public Collection getCollection() {
-        return collection;
-    }
-
-    public void setCollection(Collection collection) {
-        this.collection = collection;
-    }
-
-    public Item getDuplicate() {
-        return duplicate;
-    }
-
-    public void setDuplicate(Item duplicate) {
-        this.duplicate = duplicate;
+    public String getReadLabel() {
+        return read ? "Yes" : "No";
     }
 
     public int getId() {
@@ -181,11 +250,11 @@ public class Item {
         this.title = title;
     }
 
-    public String getType() {
+    public ItemType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ItemType type) {
         this.type = type;
     }
 
@@ -195,14 +264,6 @@ public class Item {
 
     public void setTranslated(boolean translated) {
         this.translated = translated;
-    }
-
-    public boolean isFavorite() {
-        return favorite;
-    }
-
-    public void setFavorite(boolean favorite) {
-        this.favorite = favorite;
     }
 
     public boolean isRead() {
@@ -269,12 +330,28 @@ public class Item {
         this.pageCount = pageCount;
     }
 
+    public String getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(String publishDate) {
+        this.publishDate = publishDate;
+    }
+
     public int getPublishYear() {
         return publishYear;
     }
 
     public void setPublishYear(int publishYear) {
         this.publishYear = publishYear;
+    }
+
+    public String getAddedOn() {
+        return addedOn;
+    }
+
+    public void setAddedOn(String addedOn) {
+        this.addedOn = addedOn;
     }
 
     public String getLanguage() {
@@ -293,20 +370,20 @@ public class Item {
         this.edition = edition;
     }
 
+    public String getVolume() {
+        return volume;
+    }
+
+    public void setVolume(String volume) {
+        this.volume = volume;
+    }
+
     public float getRating() {
         return rating;
     }
 
     public void setRating(float rating) {
         this.rating = rating;
-    }
-
-    public float getOwnRating() {
-        return ownRating;
-    }
-
-    public void setOwnRating(float ownRating) {
-        this.ownRating = ownRating;
     }
 
     public String getUrl() {
@@ -341,6 +418,14 @@ public class Item {
         this.filename = filename;
     }
 
+    public String getFileLocation() {
+        return fileLocation;
+    }
+
+    public void setFileLocation(String fileLocation) {
+        this.fileLocation = fileLocation;
+    }
+
     public String getNarrator() {
         return narrator;
     }
@@ -349,12 +434,28 @@ public class Item {
         this.narrator = narrator;
     }
 
+    public String getBitrate() {
+        return bitrate;
+    }
+
+    public void setBitrate(String bitrate) {
+        this.bitrate = bitrate;
+    }
+
     public String getBoughtFrom() {
         return boughtFrom;
     }
 
     public void setBoughtFrom(String boughtFrom) {
         this.boughtFrom = boughtFrom;
+    }
+
+    public int getSizeBytes() {
+        return sizeBytes;
+    }
+
+    public void setSizeBytes(int sizeBytes) {
+        this.sizeBytes = sizeBytes;
     }
 
     public int getDuration() {
@@ -373,7 +474,51 @@ public class Item {
         this.orderInSeries = orderInSeries;
     }
 
-    public String getReadLabel() {
-        return read ? "Yes" : "No";
+    public List<Author> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
+    }
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public Series getSeries() {
+        return series;
+    }
+
+    public void setSeries(Series series) {
+        this.series = series;
+    }
+
+    public Collection getCollection() {
+        return collection;
+    }
+
+    public void setCollection(Collection collection) {
+        this.collection = collection;
+    }
+
+    public Item getDuplicate() {
+        return duplicate;
+    }
+
+    public void setDuplicate(Item duplicate) {
+        this.duplicate = duplicate;
+    }
+
+    public List<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
     }
 }

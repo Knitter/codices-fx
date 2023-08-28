@@ -24,7 +24,7 @@
  */
 package eu.sergiolopes.codices.controllers;
 
-import eu.sergiolopes.codices.models.Item;
+import eu.sergiolopes.codices.models.*;
 import eu.sergiolopes.codices.repositories.ItemRepository;
 import eu.sergiolopes.codices.view.ViewManager;
 import javafx.fxml.FXML;
@@ -39,7 +39,7 @@ import java.util.ResourceBundle;
 
 public class MainController extends Controller implements Initializable {
 
-    private String showing = "paper";
+    private ItemType showing = ItemType.PAPER_BOOK;
 
     private FilteredTableView items;
     private ItemRepository itemRepository;
@@ -59,8 +59,8 @@ public class MainController extends Controller implements Initializable {
 
     @FXML
     public void listAudioBooks() {
-        if (showing != "audio") {
-            showing = "audio";
+        if (showing != ItemType.AUDIO_BOOK) {
+            showing = ItemType.AUDIO_BOOK;
 
             items.getItems().clear();
             items.getItems().addAll(itemRepository.findAllAudioBooks());
@@ -69,8 +69,8 @@ public class MainController extends Controller implements Initializable {
 
     @FXML
     public void listEbooks() {
-        if (showing != "ebook") {
-            showing = "ebook";
+        if (showing != ItemType.EBOOK) {
+            showing = ItemType.EBOOK;
             items.getItems().clear();
             items.getItems().addAll(itemRepository.findAllEbooks());
         }
@@ -78,8 +78,8 @@ public class MainController extends Controller implements Initializable {
 
     @FXML
     public void listPaperBooks() {
-        if (showing != "paper") {
-            showing = "paper";
+        if (showing != ItemType.PAPER_BOOK) {
+            showing = ItemType.PAPER_BOOK;
             items.getItems().clear();
             items.getItems().addAll(itemRepository.findAllPaperBooks());
         }
