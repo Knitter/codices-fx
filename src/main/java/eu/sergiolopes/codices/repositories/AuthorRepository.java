@@ -28,21 +28,11 @@ import eu.sergiolopes.codices.models.Author;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuthorRepository implements Repository<Author> {
-
-    //TODO: Refactor this, can't use unmodifiableObservables and need to keep some in memory to improve performance
-    // (? maybe only when needed and we have performance hit).
-    //
-    //TODO: Search methods should allow for query/condition parameter and order by clause to be set before SQL is executed
-    //
-    //TODO: Extract column names into getColumns method that can be iterated by repository implementations
 
     private Connection connection;
     private String tableName = "author";
@@ -59,9 +49,7 @@ public class AuthorRepository implements Repository<Author> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 return new Author(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("surname"),
-                        rs.getString("biography"), rs.getString("website"),
-                        rs.getString("photo"));
+                        rs.getString("surname"), rs.getString("biography"), rs.getString("website"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -79,9 +67,7 @@ public class AuthorRepository implements Repository<Author> {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 authors.add(new Author(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("surname"),
-                        rs.getString("biography"), rs.getString("website"),
-                        rs.getString("photo")));
+                        rs.getString("surname"), rs.getString("biography"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
@@ -94,43 +80,39 @@ public class AuthorRepository implements Repository<Author> {
     @Override
     public List<Author> findAllForOwner(int ownerId) {
         String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY surname, name";
-        ObservableList<Author> authors = FXCollections.observableArrayList();
+        List<Author> authors = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 authors.add(new Author(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("surname"),
-                        rs.getString("biography"), rs.getString("website"),
-                        rs.getString("photo")));
+                        rs.getString("surname"), rs.getString("biography"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(authors);
+        return FXCollections.observableList(authors);
     }
 
     @Override
     public ObservableList<Author> list(int page, int size) {
         String query = "SELECT * FROM " + tableName + " ORDER BY surname, name LIMIT " + size + " OFFSET " + page;
-        ObservableList<Author> authors = FXCollections.observableArrayList();
+        List<Author> authors = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 authors.add(new Author(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("surname"),
-                        rs.getString("biography"), rs.getString("website"),
-                        rs.getString("photo")));
+                        rs.getString("surname"), rs.getString("biography"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(authors);
+        return FXCollections.observableList(authors);
     }
 
     @Override
@@ -138,22 +120,20 @@ public class AuthorRepository implements Repository<Author> {
         String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY surname, name LIMIT "
                 + size + " OFFSET " + page;
 
-        ObservableList<Author> authors = FXCollections.observableArrayList();
+        List<Author> authors = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 authors.add(new Author(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("surname"),
-                        rs.getString("biography"), rs.getString("website"),
-                        rs.getString("photo")));
+                        rs.getString("surname"), rs.getString("biography"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(authors);
+        return FXCollections.observableList(authors);
     }
 
     @Override
@@ -170,15 +150,13 @@ public class AuthorRepository implements Repository<Author> {
             return false;
         }
 
-        //TODO: Save photo file/path/binary/whatever
-        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, surname, biography, website, photo) VALUES (?, ?, ?, ?, ?, null)";
+        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, surname, biography, website, photo) VALUES (?, 1, ?, ?, ?, null)";
         try {
             PreparedStatement statement = connection.prepareStatement(insertQry, new String[]{"id"});
             statement.setString(1, obj.getName());
-            statement.setInt(2, obj.getOwnedById());
-            statement.setString(3, obj.getSurname());
-            statement.setString(4, obj.getBiography());
-            statement.setString(5, obj.getWebsite());
+            statement.setString(2, obj.getSurname());
+            statement.setString(3, obj.getBiography());
+            statement.setString(4, obj.getWebsite());
 
             if (statement.executeUpdate() <= 0) {
                 return false;
@@ -201,7 +179,6 @@ public class AuthorRepository implements Repository<Author> {
             return false;
         }
 
-        //TODO: Update photo field
         String updateQry = "UPDATE " + tableName + " SET name = ?, surname = ?, biography = ?, website = ? WHERE id = " + obj.getId();
         try {
             PreparedStatement statement = connection.prepareStatement(updateQry);

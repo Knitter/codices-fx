@@ -25,22 +25,25 @@
 package eu.sergiolopes.codices.controllers;
 
 import eu.sergiolopes.codices.models.Author;
+import eu.sergiolopes.codices.models.Series;
 import eu.sergiolopes.codices.repositories.AuthorRepository;
 import eu.sergiolopes.codices.view.ViewManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class AuthorController extends Controller implements Initializable {
 
     private AuthorRepository authorRepository;
+    private ObservableList<Author> bookAuthors;
+    private boolean isSearching;
 
     @FXML
     private ListView<Author> authors;
@@ -59,6 +62,7 @@ public class AuthorController extends Controller implements Initializable {
 
     public AuthorController(ViewManager vm, String fxml) {
         super(vm, fxml);
+        isSearching = false;
         authorRepository = new AuthorRepository(vm.getConnection());
     }
 
@@ -69,14 +73,7 @@ public class AuthorController extends Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        Borders.wrap(photo)
-//                .lineBorder()
-//                .title("Photo")
-//                .color(Color.GREEN)
-//                .thickness(1, 0, 0, 0)
-//                .thickness(1)
-//                .radius(0, 5, 5, 0)
-//                .build();
+        bookAuthors = authorRepository.findAll();
 
         authors.setCellFactory(param -> {
             //TODO: handle update and pending changes
@@ -94,58 +91,95 @@ public class AuthorController extends Controller implements Initializable {
                 }
             };
         });
-        authors.setItems(authorRepository.findAll());
+
+        authors.setItems(bookAuthors);
         authors.setOnMouseClicked(event -> {
             Author selected = authors.getSelectionModel().getSelectedItem();
             if (selected == null) {
                 return;
             }
 
-            firstName.setText(selected.getName());
-            surname.setText(selected.getSurname());
-            website.setText(selected.getWebsite());
-            biography.setText(selected.getBiography());
+            setDetailsPanelData(selected.getName(), selected.getSurname(), selected.getWebsite(), selected.getBiography());
         });
 
         if (!authors.getItems().isEmpty()) {
             var first = authors.getItems().get(0);
-            firstName.setText(first.getName());
-            surname.setText(first.getSurname());
-            website.setText(first.getWebsite());
-            biography.setText(first.getBiography());
 
+            setDetailsPanelData(first.getName(), first.getSurname(), first.getWebsite(), first.getBiography());
             authors.getSelectionModel().selectFirst();
         }
     }
 
     public void addAuthor() {
         //TODO: set proper owner account
-        authors.getItems().add(new Author("<new author>", 1));
-        firstName.setText("<new author>");
-        surname.setText("");
-        website.setText("");
-        biography.setText("");
+        if (isSearching) {
+            searchField.setText("");
+            isSearching = false;
+            authors.setItems(bookAuthors);
+        }
 
+        emptyDetailsPanelData();
+        Author newAuthor = new Author("<new author>");
+
+        bookAuthors.add(newAuthor);
+        setDetailsPanelData(newAuthor.getName(), newAuthor.getSurname(), newAuthor.getWebsite(), newAuthor.getBiography());
         authors.getSelectionModel().selectLast();
     }
 
     public void deleteSelected() {
-        //TODO: Delete from list
-        authorRepository.delete(authors.getSelectionModel().getSelectedItem());
-    }
-
-    public void saveChanges() {
-        Author selected = authors.getSelectionModel().getSelectedItem();
+        MultipleSelectionModel<Author> selectionModel = authors.getSelectionModel();
+        Author selected = selectionModel.getSelectedItem();
         if (selected == null) {
             return;
         }
 
-        selected.setName(firstName.getText().trim());
-        selected.setSurname(surname.getText().trim());
-        selected.setWebsite(website.getText().trim());
-        selected.setBiography(biography.getText().trim());
+        int idx = selectionModel.getSelectedIndex();
+        selectionModel.clearSelection();
 
-        authorRepository.save(selected);
+        bookAuthors.remove(selected);
+        authors.getItems().remove(idx);
+        authorRepository.delete(selected);
+
+        emptyDetailsPanelData();
+        if (idx - 1 >= 0) {
+            selectionModel.select(idx - 1);
+            setDetailsPanelData(selected.getName(), selected.getSurname(), selected.getWebsite(), selected.getBiography());
+        }
+    }
+
+    public void saveChanges() {
+        //TODO: Add validation
+        Author updatedAuthor = authors.getSelectionModel().getSelectedItem();
+        if (updatedAuthor == null) {
+            return;
+        }
+
+        String newText = firstName.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedAuthor.setName(newText);
+
+        newText = surname.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedAuthor.setSurname(newText);
+
+        newText = website.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedAuthor.setWebsite(newText);
+
+        newText = biography.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedAuthor.setBiography(newText);
+
+        authorRepository.save(updatedAuthor);
+        authors.refresh();
     }
 
     public void closeWindow() {
@@ -153,10 +187,43 @@ public class AuthorController extends Controller implements Initializable {
     }
 
     public void changePhoto() {
-        //TODO: upload photo and mark dirty
+        //TODO: Not implemented yet.
     }
 
     public void search() {
+        if (!isSearching) {
+            authors.getSelectionModel().clearSelection();
+            isSearching = true;
+        }
 
+        String searchString = searchField.getText().trim();
+        if (searchString.isBlank()) {
+            authors.setItems(bookAuthors);
+            isSearching = false;
+            return;
+        }
+
+        ObservableList<Author> filtered = FXCollections.observableList(new ArrayList<>());
+        for (var current : bookAuthors) {
+            if (current.getName().contains(searchString) ||
+                    (current.getSurname() != null && current.getSurname().contains(searchString))) {
+
+                filtered.add(current);
+            }
+        }
+
+        authors.setItems(filtered);
+    }
+
+
+    private void setDetailsPanelData(String name, String surname, String website, String biography) {
+        this.firstName.setText(name);
+        this.surname.setText(surname);
+        this.website.setText(website);
+        this.biography.setText(biography);
+    }
+
+    private void emptyDetailsPanelData() {
+        setDetailsPanelData("", "", "", "");
     }
 }

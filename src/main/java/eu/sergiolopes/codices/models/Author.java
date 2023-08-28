@@ -32,43 +32,35 @@ public class Author {
     private int id;
 
     /**
-     *
+     * Author's first name.
      */
     private String name;
 
     /**
-     *
-     */
-    private int ownedById;  //FOREIGN KEY (ownedById) REFERENCES account (id)
-
-    /**
-     *
+     * Author's last name, usually show before the first name.
      */
     private String surname;
 
     /**
-     *
+     * Author's biography.
      */
     private String biography;
 
     /**
-     *
+     * URL to the author's website.
      */
     private String website;
 
-    /**
-     * //TODO: needs review; was used to store file path in server version, won't work in desktop version
-     */
-    private String photo;
+    //TODO: needs review; was used to store file path in server version, won't work in desktop version
+    //private String photo;
 
     /**
      * Creates a new Author using default values for most fields.
      *
-     * @param name      Author's first name.
-     * @param ownedById ID of the account that owns this record.
+     * @param name Author's first name.
      */
-    public Author(String name, int ownedById) {
-        this(0, name, ownedById, null, null, null, null);
+    public Author(String name) {
+        this(0, name, null, null, null);
     }
 
     /**
@@ -76,20 +68,16 @@ public class Author {
      *
      * @param id        Record's ID, used as primary key by storage (sqlite, mysql, etc.).
      * @param name      Author's first name.
-     * @param ownedById ID of the account that owns this record.
      * @param surname   Author's last name, usually shown to users.
      * @param biography Biography text.
      * @param website   URL to the author's website
-     * @param photo
      */
-    public Author(int id, String name, int ownedById, String surname, String biography, String website, String photo) {
+    public Author(int id, String name, String surname, String biography, String website) {
         this.id = id;
         this.name = name;
-        this.ownedById = ownedById;
         this.surname = surname;
         this.biography = biography;
         this.website = website;
-        this.photo = photo;
     }
 
     public int getId() {
@@ -106,14 +94,6 @@ public class Author {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getOwnedById() {
-        return ownedById;
-    }
-
-    public void setOwnedById(int ownedById) {
-        this.ownedById = ownedById;
     }
 
     public String getSurname() {
@@ -140,14 +120,11 @@ public class Author {
         this.website = website;
     }
 
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
+    /**
+     * Builds a string with the author's full name, making sure the surname is shown first (if available).
+     *
+     * @return
+     */
     public String getFullName() {
         if (name != null && !name.isBlank() && surname != null && !surname.isBlank()) {
             return surname + ", " + name;

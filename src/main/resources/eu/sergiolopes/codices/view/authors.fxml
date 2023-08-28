@@ -56,7 +56,7 @@ SOFTWARE.
          <children>
             <HBox fillHeight="false" prefWidth="280.0">
                <children>
-                  <TextField fx:id="searchField" onAction="#search" promptText="Search ..." HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="searchField" onKeyReleased="#search" promptText="Search ..." HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
              <HBox spacing="10.0" HBox.hgrow="ALWAYS">
