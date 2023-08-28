@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CollectionRepository implements Repository<Collection> {
@@ -50,8 +51,7 @@ public class CollectionRepository implements Repository<Collection> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 return new Collection(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("publishDate"),
-                        rs.getInt("publishYear"));
+                        rs.getString("publishDate"), rs.getInt("publishYear"), rs.getString("description"));
             }
 
         } catch (SQLException e) {
@@ -64,61 +64,60 @@ public class CollectionRepository implements Repository<Collection> {
     @Override
     public ObservableList<Collection> findAll() {
         String query = "SELECT * FROM " + tableName + " ORDER BY name";
-        ObservableList<Collection> collections = FXCollections.observableArrayList();
+        List<Collection> collections = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 collections.add(new Collection(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("publishDate"),
-                        rs.getInt("publishYear")));
+                        rs.getString("publishDate"), rs.getInt("publishYear"),
+                        rs.getString("description")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(collections);
+        return FXCollections.observableList(collections);
     }
 
     @Override
     public List<Collection> findAllForOwner(int ownerId) {
-        String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY surname, name";
-        ObservableList<Collection> collections = FXCollections.observableArrayList();
+        String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY name";
+        List<Collection> collections = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 collections.add(new Collection(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("publishDate"),
-                        rs.getInt("publishYear")));
+                        rs.getString("publishDate"), rs.getInt("publishYear"),
+                        rs.getString("description")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(collections);
+        return FXCollections.observableList(collections);
     }
 
     @Override
     public ObservableList<Collection> list(int page, int size) {
         String query = "SELECT * FROM " + tableName + " ORDER BY name LIMIT " + size + " OFFSET " + page;
-        ObservableList<Collection> collections = FXCollections.observableArrayList();
+        List<Collection> collections = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 collections.add(new Collection(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("publishDate"),
-                        rs.getInt("publishYear")));
+                        rs.getString("publishDate"), rs.getInt("publishYear"), rs.getString("description")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(collections);
+        return FXCollections.observableList(collections);
     }
 
     @Override
@@ -126,21 +125,21 @@ public class CollectionRepository implements Repository<Collection> {
         String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY name LIMIT "
                 + size + " OFFSET " + page;
 
-        ObservableList<Collection> collections = FXCollections.observableArrayList();
+        List<Collection> collections = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 collections.add(new Collection(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("publishDate"),
-                        rs.getInt("publishYear")));
+                        rs.getString("publishDate"), rs.getInt("publishYear"),
+                        rs.getString("description")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(collections);
+        return FXCollections.observableList(collections);
     }
 
     @Override
@@ -157,13 +156,13 @@ public class CollectionRepository implements Repository<Collection> {
             return false;
         }
 
-        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, publishDate, publishYear) VALUES (?, ?, ?, ?)";
+        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, publishDate, publishYear, description) VALUES (?, 1, ?, ?, ?)";
         try {
             PreparedStatement statement = connection.prepareStatement(insertQry, new String[]{"id"});
             statement.setString(1, obj.getName());
-            statement.setInt(2, obj.getOwnedById());
-            statement.setString(3, obj.getPublishDate());
-            statement.setInt(4, obj.getPublishYear());
+            statement.setString(2, obj.getPublishDate());
+            statement.setInt(3, obj.getPublishYear());
+            statement.setString(4, obj.getDescription());
 
             if (statement.executeUpdate() <= 0) {
                 return false;
@@ -186,12 +185,14 @@ public class CollectionRepository implements Repository<Collection> {
             return false;
         }
 
-        String updateQry = "UPDATE " + tableName + " SET name = ?, publishDate = ?, publishYear = ? WHERE id = " + obj.getId();
+        String updateQry = "UPDATE " + tableName + " SET name = ?, publishDate = ?, publishYear = ?, description = ? WHERE id = " + obj.getId();
         try {
             PreparedStatement statement = connection.prepareStatement(updateQry);
             statement.setString(1, obj.getName());
             statement.setString(2, obj.getPublishDate());
             statement.setInt(3, obj.getPublishYear());
+            statement.setString(4, obj.getDescription());
+
             return statement.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();

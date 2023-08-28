@@ -25,14 +25,20 @@
 package eu.sergiolopes.codices.controllers;
 
 import eu.sergiolopes.codices.models.Collection;
+import eu.sergiolopes.codices.models.Series;
 import eu.sergiolopes.codices.repositories.CollectionRepository;
 import eu.sergiolopes.codices.view.ViewManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class CollectionController extends Controller implements Initializable {
@@ -41,6 +47,8 @@ public class CollectionController extends Controller implements Initializable {
 
     @FXML
     private ListView<Collection> collections;
+    private ObservableList<Collection> bookCollections;
+    private boolean isSearching;
 
     @FXML
     private TextField name;
@@ -48,9 +56,14 @@ public class CollectionController extends Controller implements Initializable {
     private Spinner<Integer> publishYear;
     @FXML
     private DatePicker publishDate;
+    @FXML
+    private TextArea description;
+    @FXML
+    private TextField searchField;
 
     public CollectionController(ViewManager vm, String fxml) {
         super(vm, fxml);
+        isSearching = false;
         collectionRepository = new CollectionRepository(vm.getConnection());
     }
 
@@ -61,7 +74,9 @@ public class CollectionController extends Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        bookCollections = collectionRepository.findAll();
         publishYear.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, LocalDate.now().getYear()));
+
         collections.setCellFactory(param -> {
             //TODO: handle update and pending changes
             return new ListCell<>() {
@@ -78,45 +93,83 @@ public class CollectionController extends Controller implements Initializable {
                 }
             };
         });
-        collections.setItems(collectionRepository.findAll());
-        collections.setOnMouseClicked(event -> {
-            var selected = collections.getSelectionModel().getSelectedItem();
 
-            name.setText(selected.getName());
-            publishDate.setValue(LocalDate.parse(selected.getPublishDate()));
-            publishYear.getValueFactory().setValue(selected.getPublishYear());
+        collections.setItems(bookCollections);
+        collections.setOnMouseClicked(event -> {
+            Collection selected = collections.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                return;
+            }
+
+            setDetailsPanelData(selected.getName(), selected.getPublishDate(), selected.getPublishYear(), selected.getDescription());
         });
 
         if (!collections.getItems().isEmpty()) {
             Collection first = collections.getItems().get(0);
 
-            name.setText(first.getName());
-            publishDate.setValue(LocalDate.parse(first.getPublishDate()));
-            publishYear.getValueFactory().setValue(first.getPublishYear());
-
+            setDetailsPanelData(first.getName(), first.getPublishDate(), first.getPublishYear(), first.getDescription());
             collections.getSelectionModel().selectFirst();
         }
     }
 
     public void addCollection() {
-//        //TODO: set proper owner account
-//        collections.getItems().add(new Collection("<new collection>", 1));
-        name.setText("");
-        publishDate.setValue(null);
-        publishYear.getValueFactory().setValue(0);
+        if (isSearching) {
+            searchField.setText("");
+            isSearching = false;
+            collections.setItems(bookCollections);
+        }
+
+        emptyDetailsPanelData();
+        Collection newCollection = new Collection("<new collection>");
+
+        bookCollections.add(newCollection);
+        setDetailsPanelData(newCollection.getName(), newCollection.getPublishDate(), newCollection.getPublishYear(), newCollection.getDescription());
         collections.getSelectionModel().selectLast();
     }
 
     public void deleteSelected() {
-//        //TODO: Delete from list
-        collectionRepository.delete(collections.getSelectionModel().getSelectedItem());
+        MultipleSelectionModel<Collection> selectionModel = collections.getSelectionModel();
+        Collection selected = selectionModel.getSelectedItem();
+        if (selected == null) {
+            return;
+        }
+
+        int idx = selectionModel.getSelectedIndex();
+        selectionModel.clearSelection();
+
+        bookCollections.remove(selected);
+        collections.getItems().remove(idx);
+        collectionRepository.delete(selected);
+
+        emptyDetailsPanelData();
+        if (idx - 1 >= 0) {
+            selectionModel.select(idx - 1);
+            setDetailsPanelData(selected.getName(), selected.getPublishDate(), selected.getPublishYear(), selected.getDescription());
+        }
     }
 
     public void saveChanges() {
-        name.setText("");
-//        website.setText("");
-        publishYear.getValueFactory().setValue(0);
-        collectionRepository.save(null);
+        //TODO: Add validation
+        Collection updatedCollection = collections.getSelectionModel().getSelectedItem();
+        if (updatedCollection == null) {
+            return;
+        }
+
+        String newText = name.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedCollection.setName(newText);
+
+        newText = null;
+        if (publishDate.getValue() != null) {
+            newText = publishDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        updatedCollection.setPublishDate(newText);
+        updatedCollection.setPublishYear(publishYear.getValue());
+
+        collectionRepository.save(updatedCollection);
+        collections.refresh();
     }
 
     public void closeWindow() {
@@ -124,6 +177,36 @@ public class CollectionController extends Controller implements Initializable {
     }
 
     public void search() {
-        //TODO: ...
+        if (!isSearching) {
+            collections.getSelectionModel().clearSelection();
+            isSearching = true;
+        }
+
+        String searchString = searchField.getText().trim();
+        if (searchString.isBlank()) {
+            collections.setItems(bookCollections);
+            isSearching = false;
+            return;
+        }
+
+        ObservableList<Collection> filtered = FXCollections.observableList(new ArrayList<>());
+        for (var current : bookCollections) {
+            if (current.getName().contains(searchString)) {
+                filtered.add(current);
+            }
+        }
+
+        collections.setItems(filtered);
+    }
+
+    private void setDetailsPanelData(String name, String date, int year, String description) {
+        this.name.setText(name);
+        this.publishDate.setValue(date != null && !date.isBlank() ? LocalDate.parse(date) : null);
+        this.publishYear.getValueFactory().setValue(year);
+        this.description.setText(description);
+    }
+
+    private void emptyDetailsPanelData() {
+        setDetailsPanelData("", "", 0, "");
     }
 }

@@ -34,21 +34,37 @@ public class Collection {
      * Record's primary key. When 0 (zero) the record has not been saved to storage and exists only in memory.
      */
     private int id;
+
+    /**
+     * Collection name.
+     */
     private String name;
-    private int ownedById; //FOREIGN KEY (ownedById) REFERENCES account (id)
+
+    /**
+     * Data for when the collection was published, if any.
+     */
     private String publishDate;
+
+    /**
+     * Year for when the colleciton was published, usually when there is no specific date.
+     */
     private int publishYear;
 
-    public Collection(String name, int ownedById) {
-        this(0, name, ownedById, null, 0);
+    /**
+     * Short text describing the collection.
+     */
+    private String description;
+
+    public Collection(String name) {
+        this(0, name, null, 0, null);
     }
 
-    public Collection(int id, String name, int ownedById, String publishDate, int publishYear) {
+    public Collection(int id, String name, String publishDate, int publishYear, String description) {
         this.id = id;
         this.name = name;
-        this.ownedById = ownedById;
         this.publishDate = publishDate;
         this.publishYear = publishYear;
+        this.description = description;
     }
 
     public int getId() {
@@ -67,14 +83,6 @@ public class Collection {
         this.name = name;
     }
 
-    public int getOwnedById() {
-        return ownedById;
-    }
-
-    public void setOwnedById(int ownedById) {
-        this.ownedById = ownedById;
-    }
-
     public int getPublishYear() {
         return publishYear;
     }
@@ -89,5 +97,13 @@ public class Collection {
 
     public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
