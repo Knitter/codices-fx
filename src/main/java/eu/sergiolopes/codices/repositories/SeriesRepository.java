@@ -25,6 +25,7 @@
 package eu.sergiolopes.codices.repositories;
 
 import eu.sergiolopes.codices.models.Series;
+import eu.sergiolopes.codices.models.Item;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -32,6 +33,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SeriesRepository implements Repository<Series> {
@@ -50,8 +52,8 @@ public class SeriesRepository implements Repository<Series> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 return new Series(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getInt("completed") == 1,
-                        rs.getInt("bookCount"), rs.getInt("ownedCount"));
+                        rs.getInt("completed") == 1, rs.getInt("bookCount"),
+                        rs.getInt("ownedCount"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -63,61 +65,61 @@ public class SeriesRepository implements Repository<Series> {
     @Override
     public ObservableList<Series> findAll() {
         String query = "SELECT * FROM " + tableName + " ORDER BY name";
-        ObservableList<Series> series = FXCollections.observableArrayList();
+        List<Series> series = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 series.add(new Series(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getInt("completed") == 1,
-                        rs.getInt("bookCount"), rs.getInt("ownedCount")));
+                        rs.getInt("completed") == 1, rs.getInt("bookCount"),
+                        rs.getInt("ownedCount")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(series);
+        return FXCollections.observableList(series);
     }
 
     @Override
     public List<Series> findAllForOwner(int ownerId) {
         String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY name";
-        ObservableList<Series> series = FXCollections.observableArrayList();
+        List<Series> series = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 series.add(new Series(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getInt("completed") == 1,
-                        rs.getInt("bookCount"), rs.getInt("ownedCount")));
+                        rs.getInt("completed") == 1, rs.getInt("bookCount"),
+                        rs.getInt("ownedCount")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(series);
+        return FXCollections.observableList(series);
     }
 
     @Override
     public ObservableList<Series> list(int page, int size) {
         String query = "SELECT * FROM " + tableName + " ORDER BY name LIMIT " + size + " OFFSET " + page;
-        ObservableList<Series> series = FXCollections.observableArrayList();
+        List<Series> series = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 series.add(new Series(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getInt("completed") == 1,
-                        rs.getInt("bookCount"), rs.getInt("ownedCount")));
+                        rs.getInt("completed") == 1, rs.getInt("bookCount"),
+                        rs.getInt("ownedCount")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(series);
+        return FXCollections.observableList(series);
     }
 
     @Override
@@ -125,21 +127,21 @@ public class SeriesRepository implements Repository<Series> {
         String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY name LIMIT "
                 + size + " OFFSET " + page;
 
-        ObservableList<Series> series = FXCollections.observableArrayList();
+        List<Series> series = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 series.add(new Series(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getInt("completed") == 1,
-                        rs.getInt("bookCount"), rs.getInt("ownedCount")));
+                        rs.getInt("completed") == 1, rs.getInt("bookCount"),
+                        rs.getInt("ownedCount")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(series);
+        return FXCollections.observableList(series);
     }
 
     @Override
@@ -151,19 +153,18 @@ public class SeriesRepository implements Repository<Series> {
         return this.update(obj);
     }
 
+    @Override
     public boolean insert(Series obj) {
         if (obj.getId() > 0) {
             return false;
         }
 
-        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, completed, bookCount, ownedCount) VALUES (?, ?, ?, ?, ?)";
+        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, completed, bookCount, ownedCount) VALUES (?, 1, ?, ?, 0)";
         try {
             PreparedStatement statement = connection.prepareStatement(insertQry, new String[]{"id"});
             statement.setString(1, obj.getName());
-            statement.setInt(2, obj.getOwnedById());
-            statement.setInt(3, obj.isCompleted() ? 1 : 0);
-            statement.setInt(4, obj.getBookCount());
-            statement.setInt(5, obj.getOwnedCount());
+            statement.setInt(2, obj.isCompleted() ? 1 : 0);
+            statement.setInt(3, obj.getBookCount());
 
             if (statement.executeUpdate() <= 0) {
                 return false;
@@ -181,18 +182,18 @@ public class SeriesRepository implements Repository<Series> {
         return false;
     }
 
+    @Override
     public boolean update(Series obj) {
         if (obj.getId() <= 0) {
             return false;
         }
 
-        String updateQry = "UPDATE " + tableName + " SET name = , completed = , bookCount = , ownedCount = WHERE id = " + obj.getId();
+        String updateQry = "UPDATE " + tableName + " SET name = ?, completed = ?, bookCount = ? WHERE id = " + obj.getId();
         try {
             PreparedStatement statement = connection.prepareStatement(updateQry);
             statement.setString(1, obj.getName());
             statement.setInt(2, obj.isCompleted() ? 1 : 0);
             statement.setInt(3, obj.getBookCount());
-            statement.setInt(4, obj.getOwnedCount());
             return statement.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -213,6 +214,27 @@ public class SeriesRepository implements Repository<Series> {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+
+        return false;
+    }
+
+    /**
+     * @param seriesId
+     * @return
+     */
+    public boolean incrementOwnedBookCount(int seriesId) {
+        if (seriesId <= 0) {
+            return false;
+        }
+
+        String updateQry = "UPDATE " + tableName + " SET ownedCount = (ownedCount + 1) WHERE id = " + seriesId;
+        try {
+            PreparedStatement statement = connection.prepareStatement(updateQry);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
         return false;
     }
 }

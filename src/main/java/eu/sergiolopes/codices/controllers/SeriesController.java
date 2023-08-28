@@ -27,16 +27,24 @@ package eu.sergiolopes.codices.controllers;
 import eu.sergiolopes.codices.models.Series;
 import eu.sergiolopes.codices.repositories.SeriesRepository;
 import eu.sergiolopes.codices.view.ViewManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class SeriesController extends Controller implements Initializable {
 
+    private static final int MAX_BOOK_COUNT = 2000;
+
     private SeriesRepository seriesRepository;
+    private ObservableList<Series> bookSeries;
+    private boolean isSearching;
 
     @FXML
     private ListView<Series> series;
@@ -46,9 +54,12 @@ public class SeriesController extends Controller implements Initializable {
     private Spinner<Integer> bookCount;
     @FXML
     private CheckBox completed;
+    @FXML
+    private TextField searchField;
 
     public SeriesController(ViewManager vm, String fxml) {
         super(vm, fxml);
+        isSearching = false;
         seriesRepository = new SeriesRepository(vm.getConnection());
     }
 
@@ -59,7 +70,8 @@ public class SeriesController extends Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        bookCount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 2000));
+        bookSeries = seriesRepository.findAll();
+        bookCount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, MAX_BOOK_COUNT));
 
         series.setCellFactory(param -> {
             //TODO: handle update and pending changes
@@ -77,51 +89,115 @@ public class SeriesController extends Controller implements Initializable {
                 }
             };
         });
-        series.setItems(seriesRepository.findAll());
+
+        series.setItems(bookSeries);
         series.setOnMouseClicked(event -> {
             Series selected = series.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                return;
+            }
 
-            name.setText(selected.getName());
-            bookCount.getValueFactory().setValue(selected.getBookCount());
-            completed.setSelected(selected.isCompleted());
+            setDetailsPanelData(selected.getName(), selected.getBookCount(), selected.isCompleted());
         });
 
         if (!series.getItems().isEmpty()) {
             Series first = series.getItems().get(0);
 
-            name.setText(first.getName());
-            bookCount.getValueFactory().setValue(first.getBookCount());
-            completed.setSelected(first.isCompleted());
-
+            setDetailsPanelData(first.getName(), first.getBookCount(), first.isCompleted());
             series.getSelectionModel().selectFirst();
         }
     }
 
     public void addSeries() {
-        //TODO: set proper owner account
-        //series.getItems().add(new Series("<new series>", 1));
-        name.setText("");
-        bookCount.getValueFactory().setValue(0);
-        completed.setSelected(false);
+        if (isSearching) {
+            searchField.setText("");
+            isSearching = false;
+            series.setItems(bookSeries);
+        }
 
+        emptyDetailsPanelData();
+        Series newSeries = new Series("<new series>");
+
+        bookSeries.add(newSeries);
+        setDetailsPanelData(newSeries.getName(), newSeries.getBookCount(), newSeries.isCompleted());
         series.getSelectionModel().selectLast();
     }
 
     public void deleteSelected() {
-        //TODO: Delete from list
-        seriesRepository.delete(series.getSelectionModel().getSelectedItem());
+        MultipleSelectionModel<Series> selectionModel = series.getSelectionModel();
+        Series selected = selectionModel.getSelectedItem();
+        if (selected == null) {
+            return;
+        }
+
+        int idx = selectionModel.getSelectedIndex();
+        selectionModel.clearSelection();
+
+        bookSeries.remove(selected);
+        series.getItems().remove(idx);
+        seriesRepository.delete(selected);
+
+        emptyDetailsPanelData();
+        if (idx - 1 >= 0) {
+            selectionModel.select(idx - 1);
+            setDetailsPanelData(selected.getName(), selected.getBookCount(), selected.isCompleted());
+        }
     }
 
     public void saveChanges() {
-//        name.setText("");
-//        seriesRepository.save(null);
+        //TODO: Add validation
+        Series updatedSeries = series.getSelectionModel().getSelectedItem();
+        if (updatedSeries == null) {
+            return;
+        }
+
+        String newText = name.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+
+        updatedSeries.setName(newText);
+        updatedSeries.setBookCount(bookCount.getValueFactory().getValue());
+        updatedSeries.setCompleted(completed.isSelected());
+
+        seriesRepository.save(updatedSeries);
+        series.refresh();
     }
 
     public void closeWindow() {
         getManager().closeCurrentStage();
     }
 
-    public void search() {
+    public void search(KeyEvent event) {
+        if (!isSearching) {
+            series.getSelectionModel().clearSelection();
+            isSearching = true;
+        }
 
+        String searchString = searchField.getText().trim();
+        if (searchString.isBlank()) {
+            series.setItems(bookSeries);
+            isSearching = false;
+            return;
+        }
+
+        ObservableList<Series> filtered = FXCollections.observableList(new ArrayList<>());
+        for (var current : bookSeries) {
+            if (current.getName().contains(searchString)) {
+                filtered.add(current);
+            }
+        }
+
+        series.setItems(filtered);
+    }
+
+    private void setDetailsPanelData(String name, int bookCount, boolean completed) {
+        this.name.setText(name);
+        this.bookCount.getValueFactory().setValue(bookCount);
+        this.completed.setSelected(completed);
+    }
+
+    private void emptyDetailsPanelData() {
+        setDetailsPanelData("", 0, false);
     }
 }

@@ -30,20 +30,34 @@ public class Series {
      * Record's primary key. When 0 (zero) the record has not been saved to storage and exists only in memory.
      */
     private int id;
+
+    /**
+     * Series description/name.
+     */
     private String name;
-    private int ownedById; //FOREIGN KEY (ownedById) REFERENCES account (id)
+
+    /**
+     * Flag marking the series as completed by the author.
+     */
     private boolean completed;
+
+    /**
+     * Number of books that make up the series.
+     */
     private int bookCount;
+
+    /**
+     * Number of books owned; should be automatically updated based on books added to the system and assigned this series.
+     */
     private int ownedCount;
 
-    public Series(String name, int ownedById) {
-        this(0, name, ownedById, false, 0, 0);
+    public Series(String name) {
+        this(0, name, false, 0, 0);
     }
 
-    public Series(int id, String name, int ownedById, boolean completed, int bookCount, int ownedCount) {
+    public Series(int id, String name, boolean completed, int bookCount, int ownedCount) {
         this.id = id;
         this.name = name;
-        this.ownedById = ownedById;
         this.completed = completed;
         this.bookCount = bookCount;
         this.ownedCount = ownedCount;
@@ -63,14 +77,6 @@ public class Series {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getOwnedById() {
-        return ownedById;
-    }
-
-    public void setOwnedById(int ownedById) {
-        this.ownedById = ownedById;
     }
 
     public boolean isCompleted() {
