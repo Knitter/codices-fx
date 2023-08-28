@@ -39,6 +39,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.MasterDetailPane;
+import org.controlsfx.control.SegmentedBar;
 import org.controlsfx.control.tableview2.FilteredTableView;
 import org.controlsfx.control.tableview2.TableColumn2;
 
@@ -64,7 +65,11 @@ public class MainController extends Controller implements Initializable {
     @FXML
     private MasterDetailPane mainMasterDetailView;
     @FXML
+    private Button addItem;
+    @FXML
     private TextField searchField;
+    @FXML
+    private SegmentedBar<SegmentedBar.Segment> bookSegments;
 
     public MainController(ViewManager vm, String fxml) {
         super(vm, fxml);
@@ -107,7 +112,7 @@ public class MainController extends Controller implements Initializable {
 
     @FXML
     public void showSettings() {
-        System.out.println("Settings");
+        getManager().showSettingsWindow();
     }
 
     @FXML
@@ -211,5 +216,37 @@ public class MainController extends Controller implements Initializable {
 
         items.setItems(paperBooks);
         contentContainer.setCenter(items);
+
+        //TODO: segment bottom bar
+        //bookSegments.setSegmentViewFactory(param -> {
+        //});
+        //bookSegments.setInfoNodeFactory(segment -> new Label(segment.getText() + " " + segment.getValue() + " GB"));
+        //bookSegments.getSegments().addAll(
+        //        new SegmentedBar.Segment(0, "Audiobooks"),
+        //        new SegmentedBar.Segment(0, "eBooks"),
+        //        new SegmentedBar.Segment(0, "Books")
+        //);
+    }
+
+    public void addItem() {
+        //TODO: Event/callback
+        switch (showing) {
+            case EBOOK -> getManager().showEbookWindow();
+            case AUDIO_BOOK -> getManager().showAudioBookWindow();
+            case PAPER_BOOK -> getManager().showPaperBookWindow();
+        }
+    }
+
+    public void search() {
+        //TODO: ...
+    }
+
+    private void displaySelectedItem(Item selected) {
+        if (selected == null) {
+            mainMasterDetailView.setShowDetailNode(false);
+            return;
+        }
+
+        mainMasterDetailView.setShowDetailNode(true);
     }
 }

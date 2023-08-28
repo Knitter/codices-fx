@@ -66,6 +66,19 @@ SOFTWARE.
                 </buttons>
             </SegmentedButton>
 
+            <Button id="addItem" fx:id="addItem" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#addItem" textOverrun="CLIP">
+                <graphic>
+                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../icons/plus.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Add new paper book" />
+                </tooltip>
+            </Button>
+
             <HBox alignment="CENTER" spacing="5.0">
                 <Button id="authorsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#showAuthors" textOverrun="CLIP">
                     <graphic>
@@ -117,10 +130,32 @@ SOFTWARE.
                 </Button>
             </HBox>
 
-            <TextField fx:id="searchField" promptText="Search ..." />
+            <TextField fx:id="searchField" onKeyReleased="#search" promptText="Search ..." />
 
-            <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-                <Button id="settingsBtn" contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="0.0" mnemonicParsing="false" onAction="#showSettings" textOverrun="CLIP">
+            <HBox alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS">
+                <MenuButton contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" textOverrun="CLIP">
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/tools.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Tools" />
+                    </tooltip>
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Export CSV" />
+                        <MenuItem mnemonicParsing="false" text="Export HTML" />
+                        <MenuItem mnemonicParsing="false" text="Export HTML (Single File)" />
+                        <MenuItem mnemonicParsing="false" text="Export JSON" />
+                        <SeparatorMenuItem />
+                        <MenuItem mnemonicParsing="false" text="Import CSV" />
+                        <MenuItem mnemonicParsing="false" text="Import BookBuddy CSV" />
+                        <MenuItem mnemonicParsing="false" text="Import BookBuddy HTML" />
+                    </items>
+                </MenuButton>
+                <Button id="settingsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#showSettings" textOverrun="CLIP">
                     <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -147,15 +182,15 @@ SOFTWARE.
                 <BorderPane fx:id="contentContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" />
             </masterNode>
             <detailNode>
-                <AnchorPane fx:id="detailsContainer" />
+                <fx:include source="book-details.fxml"/>
             </detailNode>
         </MasterDetailPane>
     </center>
-   <bottom>
-      <HBox prefHeight="25.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
-         <children>
-            <SegmentedBar prefHeight="200.0" prefWidth="200.0" />
-         </children>
-      </HBox>
-   </bottom>
+    <bottom>
+        <HBox prefHeight="25.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
+            <children>
+                <SegmentedBar fx:id="bookSegments" orientation="HORIZONTAL" HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+    </bottom>
 </BorderPane>

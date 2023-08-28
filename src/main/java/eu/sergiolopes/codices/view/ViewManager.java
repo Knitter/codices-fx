@@ -142,6 +142,22 @@ public class ViewManager {
         showModal(new SeriesController(this, "series.fxml"));
     }
 
+    public void showSettingsWindow() {
+        showModal(new SettingsController(this, "settings.fxml"));
+    }
+
+    public void showEbookWindow() {
+        //TODO: ...
+    }
+
+    public void showAudioBookWindow() {
+        //TODO: ...
+    }
+
+    public void showPaperBookWindow() {
+        //TODO: ...
+    }
+
     private void showModal(Controller controller) {
         //TODO: share with this.initialize()
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(controller.getFxml()));
