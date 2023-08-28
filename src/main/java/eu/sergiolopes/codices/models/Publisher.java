@@ -30,23 +30,31 @@ public class Publisher {
      * Record's primary key. When 0 (zero) the record has not been saved to storage and exists only in memory.
      */
     private int id;
-    private String name;
-    private int ownedById; //FOREIGN KEY (ownedById) REFERENCES account (id)
-    private String summary;
-    private String website;
-    private String logo;
 
-    public Publisher(String name, int ownedById) {
-        this(0, name, ownedById, null, null, null);
+    /**
+     * Publisher's, or publishing group's, name.
+     */
+    private String name;
+
+    /**
+     * Short text describing the publisher or publising group.
+     */
+    private String summary;
+
+    /**
+     * URL for the publisher's website.
+     */
+    private String website;
+
+    public Publisher(String name) {
+        this(0, name, null, null);
     }
 
-    public Publisher(int id, String name, int ownedById, String summary, String website, String logo) {
+    public Publisher(int id, String name, String summary, String website) {
         this.id = id;
         this.name = name;
-        this.ownedById = ownedById;
         this.summary = summary;
         this.website = website;
-        this.logo = logo;
     }
 
     public int getId() {
@@ -65,14 +73,6 @@ public class Publisher {
         this.name = name;
     }
 
-    public int getOwnedById() {
-        return ownedById;
-    }
-
-    public void setOwnedById(int ownedById) {
-        this.ownedById = ownedById;
-    }
-
     public String getSummary() {
         return summary;
     }
@@ -87,13 +87,5 @@ public class Publisher {
 
     public void setWebsite(String website) {
         this.website = website;
-    }
-
-    public String getLogo() {
-        return logo;
-    }
-
-    public void setLogo(String logo) {
-        this.logo = logo;
     }
 }

@@ -25,37 +25,40 @@
 package eu.sergiolopes.codices.controllers;
 
 import eu.sergiolopes.codices.models.Publisher;
+import eu.sergiolopes.codices.models.Series;
 import eu.sergiolopes.codices.repositories.PublisherRepository;
 import eu.sergiolopes.codices.view.ViewManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class PublisherController extends Controller implements Initializable {
 
     private PublisherRepository publisherRepository;
+    private ObservableList<Publisher> bookPublishers;
+    private boolean isSearching;
 
     @FXML
     private ListView<Publisher> publishers;
-
-    @FXML
-    private ImageView logo;
     @FXML
     private TextField name;
     @FXML
     private TextField website;
     @FXML
     private TextArea summary;
+    @FXML
+    private TextField searchField;
 
     public PublisherController(ViewManager vm, String fxml) {
         super(vm, fxml);
+        isSearching = false;
         publisherRepository = new PublisherRepository(vm.getConnection());
     }
 
@@ -66,15 +69,7 @@ public class PublisherController extends Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        Borders.wrap(photo)
-//                .lineBorder()
-//                .title("Photo")
-//                .color(Color.GREEN)
-//                .thickness(1, 0, 0, 0)
-//                .thickness(1)
-//                .radius(0, 5, 5, 0)
-//                .build();
-
+        bookPublishers = publisherRepository.findAll();
         publishers.setCellFactory(param -> {
             //TODO: handle update and pending changes
             return new ListCell<>() {
@@ -91,47 +86,88 @@ public class PublisherController extends Controller implements Initializable {
                 }
             };
         });
-        publishers.setItems(publisherRepository.findAll());
+
+        publishers.setItems(bookPublishers);
         publishers.setOnMouseClicked(event -> {
             Publisher selected = publishers.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                return;
+            }
 
-            name.setText(selected.getName());
-            website.setText(selected.getWebsite());
-            summary.setText(selected.getSummary());
+            setDetailsPanelData(selected.getName(), selected.getWebsite(), selected.getSummary());
         });
 
         if (!publishers.getItems().isEmpty()) {
             Publisher first = publishers.getItems().get(0);
-            name.setText(first.getName());
-            website.setText(first.getWebsite());
-            summary.setText(first.getSummary());
 
+            setDetailsPanelData(first.getName(), first.getWebsite(), first.getSummary());
             publishers.getSelectionModel().selectFirst();
         }
     }
 
     public void addPublisher() {
-        //TODO: set proper owner account
-//        publishers.getItems().add(new Author("<new author>", 1));
-//        firstName.setText("");
-//        surname.setText("");
-//        website.setText("");
-//        biography.setText("");
-//
-//        publishers.getSelectionModel().selectLast();
+        if (isSearching) {
+            searchField.setText("");
+            isSearching = false;
+            publishers.setItems(bookPublishers);
+        }
+
+        emptyDetailsPanelData();
+        Publisher newPublisher = new Publisher("<new publisher>");
+
+        bookPublishers.add(newPublisher);
+        setDetailsPanelData(newPublisher.getName(), newPublisher.getWebsite(), newPublisher.getSummary());
+        publishers.getSelectionModel().selectLast();
     }
 
     public void deleteSelected() {
-        //TODO: Delete from list
-        publisherRepository.delete(publishers.getSelectionModel().getSelectedItem());
+        MultipleSelectionModel<Publisher> selectionModel = publishers.getSelectionModel();
+        Publisher selected = selectionModel.getSelectedItem();
+        if (selected == null) {
+            return;
+        }
+
+        int idx = selectionModel.getSelectedIndex();
+        selectionModel.clearSelection();
+
+        bookPublishers.remove(selected);
+        publishers.getItems().remove(idx);
+        publisherRepository.delete(selected);
+
+        emptyDetailsPanelData();
+        if (idx - 1 >= 0) {
+            selectionModel.select(idx - 1);
+            setDetailsPanelData(selected.getName(), selected.getWebsite(), selected.getSummary());
+        }
     }
 
     public void saveChanges() {
-//        firstName.setText("");
-//        surname.setText("");
-//        website.setText("");
-//        biography.setText("");
-//        authorRepository.save(null);
+        //TODO: Add validation
+        Publisher updatedPublisher = publishers.getSelectionModel().getSelectedItem();
+        if (updatedPublisher == null) {
+            return;
+        }
+
+        String newText = name.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedPublisher.setName(newText);
+
+        newText = website.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedPublisher.setWebsite(newText);
+
+        newText = summary.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+        updatedPublisher.setSummary(newText);
+
+        publisherRepository.save(updatedPublisher);
+        publishers.refresh();
     }
 
     public void closeWindow() {
@@ -139,6 +175,35 @@ public class PublisherController extends Controller implements Initializable {
     }
 
     public void search() {
-        //TODO: ...
+        if (!isSearching) {
+            publishers.getSelectionModel().clearSelection();
+            isSearching = true;
+        }
+
+        String searchString = searchField.getText().trim();
+        if (searchString.isBlank()) {
+            publishers.setItems(bookPublishers);
+            isSearching = false;
+            return;
+        }
+
+        ObservableList<Publisher> filtered = FXCollections.observableList(new ArrayList<>());
+        for (var current : bookPublishers) {
+            if (current.getName().contains(searchString)) {
+                filtered.add(current);
+            }
+        }
+
+        publishers.setItems(filtered);
+    }
+
+    private void setDetailsPanelData(String name, String website, String summary) {
+        this.name.setText(name);
+        this.website.setText(website);
+        this.summary.setText(summary);
+    }
+
+    private void emptyDetailsPanelData() {
+        setDetailsPanelData("", "", "");
     }
 }

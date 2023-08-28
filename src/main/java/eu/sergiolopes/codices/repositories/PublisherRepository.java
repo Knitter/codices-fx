@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PublisherRepository implements Repository<Publisher> {
@@ -49,8 +50,7 @@ public class PublisherRepository implements Repository<Publisher> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 return new Publisher(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("summary"),
-                        rs.getString("website"), rs.getString("logo"));
+                        rs.getString("summary"), rs.getString("website"));
             }
 
         } catch (SQLException e) {
@@ -63,61 +63,58 @@ public class PublisherRepository implements Repository<Publisher> {
     @Override
     public ObservableList<Publisher> findAll() {
         String query = "SELECT * FROM " + tableName + " ORDER BY name";
-        ObservableList<Publisher> publishers = FXCollections.observableArrayList();
+        List<Publisher> publishers = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 publishers.add(new Publisher(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("summary"),
-                        rs.getString("website"), rs.getString("logo")));
+                        rs.getString("summary"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(publishers);
+        return FXCollections.observableList(publishers);
     }
 
     @Override
     public List<Publisher> findAllForOwner(int ownerId) {
         String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY name";
-        ObservableList<Publisher> publishers = FXCollections.observableArrayList();
+        List<Publisher> publishers = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 publishers.add(new Publisher(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("summary"),
-                        rs.getString("website"), rs.getString("logo")));
+                        rs.getString("summary"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(publishers);
+        return FXCollections.observableList(publishers);
     }
 
     @Override
     public ObservableList<Publisher> list(int page, int size) {
         String query = "SELECT * FROM " + tableName + " ORDER BY name LIMIT " + size + " OFFSET " + page;
-        ObservableList<Publisher> publishers = FXCollections.observableArrayList();
+        List<Publisher> publishers = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 publishers.add(new Publisher(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("summary"),
-                        rs.getString("website"), rs.getString("logo")));
+                        rs.getString("summary"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(publishers);
+        return FXCollections.observableList(publishers);
     }
 
     @Override
@@ -125,45 +122,43 @@ public class PublisherRepository implements Repository<Publisher> {
         String query = "SELECT * FROM " + tableName + " WHERE ownedById = " + ownerId + " ORDER BY name LIMIT "
                 + size + " OFFSET " + page;
 
-        ObservableList<Publisher> publishers = FXCollections.observableArrayList();
+        List<Publisher> publishers = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 publishers.add(new Publisher(rs.getInt("id"), rs.getString("name"),
-                        rs.getInt("ownedById"), rs.getString("summary"),
-                        rs.getString("website"), rs.getString("logo")));
+                        rs.getString("summary"), rs.getString("website")));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return FXCollections.unmodifiableObservableList(publishers);
+        return FXCollections.observableList(publishers);
     }
 
     @Override
     public boolean save(Publisher obj) {
-        if (obj.getId() > 0) {
+        if (obj.getId() <= 0) {
             return this.insert(obj);
         }
 
         return this.update(obj);
     }
 
+    @Override
     public boolean insert(Publisher obj) {
         if (obj.getId() > 0) {
             return false;
         }
 
-        //TODO: logo file/image
-        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, summary, website, logo) VALUES (?, ?, ?, ?, null)";
+        String insertQry = "INSERT INTO " + tableName + "(name, ownedById, summary, website) VALUES (?, 1, ?, ?)";
         try {
             PreparedStatement statement = connection.prepareStatement(insertQry, new String[]{"id"});
             statement.setString(1, obj.getName());
-            statement.setInt(2, obj.getOwnedById());
-            statement.setString(3, obj.getSummary());
-            statement.setString(4, obj.getWebsite());
+            statement.setString(2, obj.getSummary());
+            statement.setString(3, obj.getWebsite());
 
             if (statement.executeUpdate() <= 0) {
                 return false;
@@ -181,13 +176,13 @@ public class PublisherRepository implements Repository<Publisher> {
         return false;
     }
 
+    @Override
     public boolean update(Publisher obj) {
         if (obj.getId() <= 0) {
             return false;
         }
 
-        //TODO: Logo image/etc.
-        String updateQry = "UPDATE " + tableName + " SET name = , summary = , website = WHERE id = " + obj.getId();
+        String updateQry = "UPDATE " + tableName + " SET name = ?, summary = ?, website = ? WHERE id = " + obj.getId();
         try {
             PreparedStatement statement = connection.prepareStatement(updateQry);
             statement.setString(1, obj.getName());
