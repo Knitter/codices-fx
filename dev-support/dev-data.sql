@@ -4,7 +4,7 @@
 
 -- Default account, would be created during first time the application run or by user request
 INSERT INTO account (username, email, name, active, password, createdAt, updatedAt)
-VALUES ('knitter', 'knitter.is@gmai.com', 'Sérgio Lopes', 1, '12345678', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('codices', 'codices@placeholder.moc', 'Codices', 1, '12345678', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- List of publishers (mainly paper books)
 INSERT INTO publisher(name, ownedById, website)
@@ -148,7 +148,7 @@ VALUES (1, 'Liberdade é só mais uma palavra para as pessoas descobrirem que é
         CURRENT_TIMESTAMP),
        (24, 'Shadow of a Dark Queen', NULL, 1, 'paper', 1, 0, 1, '9780006480266', 'English', 1, NULL, 8, 'Paperback',
         CURRENT_TIMESTAMP),
-       (25, 'Rise of a Merchant Prince', NULL, 1, 'paper', 1, 0, 1, - '9780006497011', 'English', 2, NULL, 8,
+       (25, 'Rise of a Merchant Prince', NULL, 1, 'paper', 1, 0, 1, '9780006497011', 'English', 2, NULL, 8,
         'Paperback', CURRENT_TIMESTAMP),
        (26, 'Rage of a Demon King', NULL, 1, 'paper', 1, 0, 1, '9780006482987', 'English', 3, NULL, 8, 'Paperback',
         CURRENT_TIMESTAMP),
