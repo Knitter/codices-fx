@@ -51,6 +51,7 @@ CREATE TABLE collection
     ownedById   INTEGER NOT NULL,
     publishDate TEXT,
     publishYear INTEGER,
+    description TEXT,
     FOREIGN KEY (ownedById) REFERENCES account (id)
 );
 
