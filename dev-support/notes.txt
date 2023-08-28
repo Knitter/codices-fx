@@ -53,3 +53,39 @@ Default UI:
 
 Future/Ideas:
 - Add ebook reader and audio player? Audio player would be interesting to have and to develop.
+
+
+TableColumn2<Item, Float> ratingCol = new TableColumn2<>("Rating");
+        ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
+        ratingCol.setCellFactory(param -> new TableCell<Item, Float>() {
+            private final Rating star;
+
+            {
+                star = new Rating();
+                star.setMax(5);
+                star.setMaxHeight(32);
+                star.setPrefHeight(32);
+                star.setUpdateOnHover(true);
+            }
+
+            @Override
+            protected void updateItem(Float rating, boolean empty) {
+                super.updateItem(rating, empty);
+                if (rating == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                    return;
+                }
+
+                star.setRating(rating);
+                setGraphic(star);
+            }
+        });
+        items.getColumns().add(ratingCol);
+
+        items.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Item>() {
+                    @Override
+                    public void onChanged(Change<? extends Item> c) {
+                        System.out.println(c.getList());
+                    }
+                });
