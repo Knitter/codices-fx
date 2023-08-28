@@ -27,28 +27,48 @@ package eu.sergiolopes.codices.controllers;
 import eu.sergiolopes.codices.models.*;
 import eu.sergiolopes.codices.repositories.ItemRepository;
 import eu.sergiolopes.codices.view.ViewManager;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.tableview2.FilteredTableView;
+import org.controlsfx.control.tableview2.TableColumn2;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController extends Controller implements Initializable {
 
     private ItemType showing = ItemType.PAPER_BOOK;
 
-    private FilteredTableView items;
+    private FilteredTableView<Item> items;
     private ItemRepository itemRepository;
+    private ObservableList<Item> paperBooks;
+    private ObservableList<Item> audioBooks;
+    private ObservableList<Item> eBooks;
+    private boolean isSearching;
+    private ObservableList<Item> selectedItems;
 
     @FXML
     private BorderPane contentContainer;
+    @FXML
+    private MasterDetailPane mainMasterDetailView;
+    @FXML
+    private TextField searchField;
 
     public MainController(ViewManager vm, String fxml) {
         super(vm, fxml);
+        isSearching = false;
         itemRepository = new ItemRepository(vm.getConnection());
     }
 
@@ -112,35 +132,84 @@ public class MainController extends Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        items = new FilteredTableView();
+        items = new FilteredTableView<>();
+        items.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> displaySelectedItem(newValue));
 
-        TableColumn<Item, String> col = new TableColumn<>("Title");
+        TableColumn2<Item, String> col = new TableColumn2<>("Title");
         col.setCellValueFactory(new PropertyValueFactory<>("title"));
         items.getColumns().add(col);
 
-        //TODO:
-        //Series
-        //Authors
-        //Genre
+        col = new TableColumn2<>("Author");
+        col.setCellValueFactory(param -> {
+            List<Author> authors = param.getValue().getAuthors();
 
-        col = new TableColumn<>("Format");
+            String authorsString = "";
+            if (authors != null && !authors.isEmpty()) {
+                List names = new ArrayList(authors.size());
+                for (Author author : authors) {
+                    names.add(author.getFullName());
+                }
+
+                authorsString = String.join("; ", names);
+            }
+
+            return new SimpleObjectProperty<>(authorsString);
+        });
+        items.getColumns().add(col);
+
+        col = new TableColumn2<>("Series");
+        col.setCellValueFactory(param -> {
+            String name = "";
+            Series series = param.getValue().getSeries();
+            if (series != null) {
+                name = series.getName();
+            }
+
+            return new SimpleObjectProperty<>(name);
+        });
+        items.getColumns().add(col);
+
+        col = new TableColumn2<>("Genre");
+        col.setCellValueFactory(param -> {
+            List<Genre> genres = param.getValue().getGenres();
+
+            String genresString = "";
+            if (genres != null && !genres.isEmpty()) {
+                List names = new ArrayList(genres.size());
+                for (Genre genre : genres) {
+                    names.add(genre.getName());
+                }
+
+                genresString = String.join(", ", names);
+            }
+
+            return new SimpleObjectProperty<>(genresString);
+        });
+        items.getColumns().add(col);
+
+        col = new TableColumn2<>("Format");
         col.setCellValueFactory(new PropertyValueFactory<>("format"));
         items.getColumns().add(col);
 
-        col = new TableColumn<>("Language");
-        col.setCellValueFactory(new PropertyValueFactory<>("language"));
+        col = new TableColumn2<>("Pages");
+        col.setCellValueFactory(new PropertyValueFactory<>("pageCount"));
         items.getColumns().add(col);
 
-        col = new TableColumn<>("ISBN");
+        col = new TableColumn2<>("ISBN");
         col.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         items.getColumns().add(col);
 
-        //TODO: show checkbox or check icon
-        col = new TableColumn<>("Read?");
-        col.setCellValueFactory(new PropertyValueFactory<>("readLabel"));
-        items.getColumns().add(col);
+        TableColumn2<Item, Boolean> readCol = new TableColumn2<>("Read?");
+        readCol.setCellValueFactory(param -> new SimpleBooleanProperty(param.getValue().isRead()));
+        readCol.setCellFactory(CheckBoxTableCell.forTableColumn(readCol));
+        readCol.setPrefWidth(60);
+        items.getColumns().add(readCol);
 
-        items.getItems().addAll(itemRepository.findAllPaperBooks());
+        paperBooks = itemRepository.findAllPaperBooks();
+        eBooks = itemRepository.findAllEbooks();
+        audioBooks = itemRepository.findAllAudioBooks();
+
+        items.setItems(paperBooks);
         contentContainer.setCenter(items);
     }
 }
