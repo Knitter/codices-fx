@@ -66,7 +66,12 @@ public class ItemRepository implements Repository<Item> {
                         itemRs.getString("url"), itemRs.getString("review"),
                         itemRs.getString("cover"), itemRs.getString("filename"),
                         itemRs.getString("fileLocation"), itemRs.getString("narrator"),
-                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getString("illustrator"), itemRs.getString("dimensions"),
+                        itemRs.getString("physicalLocation"), itemRs.getString("loanedTo"),
+                        itemRs.getString("loanedDate"), itemRs.getString("borrowedFrom"),
+                        itemRs.getString("borrowedDate"),
+                        itemRs.getString("bitrate"), itemRs.getString("purchasedFrom"),
+                        itemRs.getString("purchasedOn"),
                         itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
                         itemRs.getInt("orderInSeries"));
 
@@ -164,7 +169,12 @@ public class ItemRepository implements Repository<Item> {
                         itemRs.getString("url"), itemRs.getString("review"),
                         itemRs.getString("cover"), itemRs.getString("filename"),
                         itemRs.getString("fileLocation"), itemRs.getString("narrator"),
-                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getString("illustrator"), itemRs.getString("dimensions"),
+                        itemRs.getString("physicalLocation"), itemRs.getString("loanedTo"),
+                        itemRs.getString("loanedDate"), itemRs.getString("borrowedFrom"),
+                        itemRs.getString("borrowedDate"),
+                        itemRs.getString("bitrate"), itemRs.getString("purchasedFrom"),
+                        itemRs.getString("purchasedOn"),
                         itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
                         itemRs.getInt("orderInSeries"));
 
@@ -265,7 +275,12 @@ public class ItemRepository implements Repository<Item> {
                         itemRs.getString("url"), itemRs.getString("review"),
                         itemRs.getString("cover"), itemRs.getString("filename"),
                         itemRs.getString("fileLocation"), itemRs.getString("narrator"),
-                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getString("illustrator"), itemRs.getString("dimensions"),
+                        itemRs.getString("physicalLocation"), itemRs.getString("loanedTo"),
+                        itemRs.getString("loanedDate"), itemRs.getString("borrowedFrom"),
+                        itemRs.getString("borrowedDate"),
+                        itemRs.getString("bitrate"), itemRs.getString("purchasedFrom"),
+                        itemRs.getString("purchasedOn"),
                         itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
                         itemRs.getInt("orderInSeries"));
 
@@ -366,7 +381,12 @@ public class ItemRepository implements Repository<Item> {
                         itemRs.getString("url"), itemRs.getString("review"),
                         itemRs.getString("cover"), itemRs.getString("filename"),
                         itemRs.getString("fileLocation"), itemRs.getString("narrator"),
-                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getString("illustrator"), itemRs.getString("dimensions"),
+                        itemRs.getString("physicalLocation"), itemRs.getString("loanedTo"),
+                        itemRs.getString("loanedDate"), itemRs.getString("borrowedFrom"),
+                        itemRs.getString("borrowedDate"),
+                        itemRs.getString("bitrate"), itemRs.getString("purchasedFrom"),
+                        itemRs.getString("purchasedOn"),
                         itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
                         itemRs.getInt("orderInSeries"));
 
@@ -469,7 +489,12 @@ public class ItemRepository implements Repository<Item> {
                         itemRs.getString("url"), itemRs.getString("review"),
                         itemRs.getString("cover"), itemRs.getString("filename"),
                         itemRs.getString("fileLocation"), itemRs.getString("narrator"),
-                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getString("illustrator"), itemRs.getString("dimensions"),
+                        itemRs.getString("physicalLocation"), itemRs.getString("loanedTo"),
+                        itemRs.getString("loanedDate"), itemRs.getString("borrowedFrom"),
+                        itemRs.getString("borrowedDate"),
+                        itemRs.getString("bitrate"), itemRs.getString("purchasedFrom"),
+                        itemRs.getString("purchasedOn"),
                         itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
                         itemRs.getInt("orderInSeries"));
 
@@ -561,9 +586,11 @@ public class ItemRepository implements Repository<Item> {
 
         String insertQry = "INSERT INTO " + tableName + "(title, ownedById, type, translated, read,copies, subtitle, "
                 + "originalTitle, plot,isbn, format,pageCount,  publishDate, publishYear, addedOn, language, edition, "
-                + "volume, rating, url, review, cover, filename, fileLocation, narrator, bitrate, boughtFrom, duration, "
-                + "sizeBytes, orderInSeries, publisherId, seriesId, collectionId, duplicatesId) VALUES (?, 1, ?, ?, "
-                + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)";
+                + "volume, rating, url, review, cover, filename, fileLocation, narrator, illustrator, dimensions, "
+                + "physicalLocation, loanedTo, loanedDate, borrowedFrom, borrowedDatebitrate, boughtFrom, duration, "
+                + "sizeBytes, orderInSeries, publisherId, seriesId, collectionId, duplicatesId) VALUES (?, 1, ?, ?, ?, ?, "
+                + "?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, "
+                + "?, ?, ?, ?, ?, ?, ?, NULL)";
         try {
             PreparedStatement statement = connection.prepareStatement(insertQry, new String[]{"id"});
 
@@ -589,10 +616,19 @@ public class ItemRepository implements Repository<Item> {
             statement.setString(20, obj.getFilename());
             statement.setString(21, obj.getFileLocation());
             statement.setString(22, obj.getNarrator());
-            statement.setString(23, obj.getBoughtFrom());
-            statement.setInt(24, obj.getDuration());
-            statement.setInt(25, obj.getSizeBytes());
-            statement.setInt(26, obj.getOrderInSeries());
+            statement.setString(23, obj.getIllustrator());
+            statement.setString(24, obj.getDimensions());
+            statement.setString(25, obj.getPhysicalLocation());
+            statement.setString(26, obj.getLoanedTo());
+            statement.setString(27, obj.getLoanedDate());
+            statement.setString(28, obj.getBorrowedFrom());
+            statement.setString(29, obj.getBorrowedDate());
+            statement.setString(30, obj.getBitrate());
+            statement.setString(31, obj.getPurchasedFrom());
+            statement.setString(32, obj.getPurchasedOn());
+            statement.setInt(33, obj.getDuration());
+            statement.setInt(34, obj.getSizeBytes());
+            statement.setInt(35, obj.getOrderInSeries());
 
             if (obj.getPublisher() != null) {
                 statement.setInt(27, obj.getPublisher().getId());
@@ -637,8 +673,9 @@ public class ItemRepository implements Repository<Item> {
         String updateQry = "UPDATE " + tableName + " SET title = ?, type = ?, translated = ?, read = ?, copies = ?, subtitle = ?, "
                 + "originalTitle = ?, plot = ?, isbn = ?, format = ?, pageCount = ?, publishDate = ?, publishYear = ?, "
                 + "language = ?, edition = ?, volume = ?, rating = ?, url = ?, review = ?, filename = ?, fileLocation = ?, "
-                + "narrator = ?, bitrate = ?, boughtFrom = ?, duration = ?, sizeBytes = ?, orderInSeries = ?, publisherId = ?,"
-                + "seriesId = ?,  collectionId = ? WHERE id = " + obj.getId();
+                + "narrator = ?, illustrator = ?, dimensions = ?, physicalLocation = ?, loanedTo = ?, loanedDate = ?, "
+                + "borrowedFrom = ?, borrowedDate = ? bitrate = ?, purchasedFrom = ?, purchasedOn = ?, duration = ?, "
+                + "sizeBytes = ?, orderInSeries = ?, publisherId = ?, seriesId = ?,  collectionId = ? WHERE id = " + obj.getId();
         try {
             PreparedStatement statement = connection.prepareStatement(updateQry);
             statement.setString(1, obj.getTitle());
@@ -663,10 +700,21 @@ public class ItemRepository implements Repository<Item> {
             statement.setString(20, obj.getFilename());
             statement.setString(21, obj.getFileLocation());
             statement.setString(22, obj.getNarrator());
-            statement.setString(23, obj.getBoughtFrom());
-            statement.setInt(24, obj.getDuration());
-            statement.setInt(25, obj.getSizeBytes());
-            statement.setInt(26, obj.getOrderInSeries());
+
+            statement.setString(23, obj.getIllustrator());
+            statement.setString(24, obj.getDimensions());
+            statement.setString(25, obj.getPhysicalLocation());
+            statement.setString(26, obj.getLoanedTo());
+            statement.setString(27, obj.getLoanedDate());
+            statement.setString(28, obj.getBorrowedFrom());
+            statement.setString(29, obj.getBorrowedDate());
+            statement.setString(30, obj.getBitrate());
+            statement.setString(31, obj.getPurchasedFrom());
+            statement.setString(32, obj.getPurchasedOn());
+
+            statement.setInt(33, obj.getDuration());
+            statement.setInt(34, obj.getSizeBytes());
+            statement.setInt(35, obj.getOrderInSeries());
 
             if (obj.getPublisher() != null) {
                 statement.setInt(27, obj.getPublisher().getId());
@@ -750,7 +798,12 @@ public class ItemRepository implements Repository<Item> {
                         itemRs.getString("url"), itemRs.getString("review"),
                         itemRs.getString("cover"), itemRs.getString("filename"),
                         itemRs.getString("fileLocation"), itemRs.getString("narrator"),
-                        itemRs.getString("bitrate"), itemRs.getString("boughtFrom"),
+                        itemRs.getString("illustrator"), itemRs.getString("dimensions"),
+                        itemRs.getString("physicalLocation"), itemRs.getString("loanedTo"),
+                        itemRs.getString("loanedDate"), itemRs.getString("borrowedFrom"),
+                        itemRs.getString("borrowedDate"),
+                        itemRs.getString("bitrate"), itemRs.getString("purchasedFrom"),
+                        itemRs.getString("purchasedOn"),
                         itemRs.getInt("sizeBytes"), itemRs.getInt("duration"),
                         itemRs.getInt("orderInSeries"));
 

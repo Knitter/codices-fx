@@ -136,7 +136,7 @@ public class Item {
     /**
      *
      */
-    private String cover;
+    //private String cover;
 
     /**
      *
@@ -153,6 +153,14 @@ public class Item {
      */
     private String narrator;
 
+    private String illustrator;
+    private String dimensions;
+    private String physicalLocation;
+    private String loanedTo;
+    private String loanedDate;
+    private String borrowedFrom;
+    private String borrowedDate;
+
     /**
      *
      */
@@ -161,7 +169,12 @@ public class Item {
     /**
      *
      */
-    private String boughtFrom;
+    private String purchasedFrom;
+
+    /**
+     *
+     */
+    private String purchasedOn;
 
     /**
      *
@@ -189,14 +202,17 @@ public class Item {
         this(0, title, type, false, false, 1, null, null, null, null,
                 null, 0, null, 0, null, null, null,
                 null, 0, null, null, null, null, null, null,
-                null, null, 0, 0, 1);
+                null, null, null, null, null, null, null,
+                null, null, null, 0, 0, 1);
     }
 
     public Item(int id, String title, ItemType type, boolean translated, boolean read, int copies, String subtitle,
                 String originalTitle, String plot, String isbn, String format, int pageCount, String publishDate,
                 int publishYear, String addedOn, String language, String edition, String volume, float rating, String url,
-                String review, String cover, String filename, String fileLocation, String narrator, String bitrate,
-                String boughtFrom, int sizeBytes, int duration, int orderInSeries) {
+                String review, String cover, String filename, String fileLocation, String narrator, String illustrator,
+                String dimensions, String physicalLocation, String loanedTo, String loanedDate, String borrowedFrom,
+                String borrowedDate, String bitrate, String purchasedFrom, String purchasedOn, int sizeBytes,
+                int duration, int orderInSeries) {
 
         this.id = id;
         this.title = title;
@@ -219,12 +235,20 @@ public class Item {
         this.rating = rating;
         this.url = url;
         this.review = review;
-        this.cover = cover;
+        //this.cover = cover;
         this.filename = filename;
         this.fileLocation = fileLocation;
         this.narrator = narrator;
+        this.illustrator = illustrator;
+        this.dimensions = dimensions;
+        this.physicalLocation = physicalLocation;
+        this.loanedTo = loanedTo;
+        this.loanedDate = loanedDate;
+        this.borrowedFrom = borrowedFrom;
+        this.borrowedDate = borrowedDate;
         this.bitrate = bitrate;
-        this.boughtFrom = boughtFrom;
+        this.purchasedFrom = purchasedFrom;
+        this.purchasedOn = purchasedOn;
         this.sizeBytes = sizeBytes;
         this.duration = duration;
         this.orderInSeries = orderInSeries;
@@ -402,13 +426,13 @@ public class Item {
         this.review = review;
     }
 
-    public String getCover() {
-        return cover;
-    }
+    //public String getCover() {
+    //    return cover;
+    //}
 
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
+    //public void setCover(String cover) {
+    //    this.cover = cover;
+    //}
 
     public String getFilename() {
         return filename;
@@ -434,6 +458,62 @@ public class Item {
         this.narrator = narrator;
     }
 
+    public String getIllustrator() {
+        return illustrator;
+    }
+
+    public void setIllustrator(String illustrator) {
+        this.illustrator = illustrator;
+    }
+
+    public String getDimensions() {
+        return dimensions;
+    }
+
+    public void setDimensions(String dimensions) {
+        this.dimensions = dimensions;
+    }
+
+    public String getPhysicalLocation() {
+        return physicalLocation;
+    }
+
+    public void setPhysicalLocation(String physicalLocation) {
+        this.physicalLocation = physicalLocation;
+    }
+
+    public String getLoanedTo() {
+        return loanedTo;
+    }
+
+    public void setLoanedTo(String loanedTo) {
+        this.loanedTo = loanedTo;
+    }
+
+    public String getLoanedDate() {
+        return loanedDate;
+    }
+
+    public void setLoanedDate(String loanedDate) {
+        this.loanedDate = loanedDate;
+    }
+
+    public String getBorrowedFrom() {
+        return borrowedFrom;
+    }
+
+    public void setBorrowedFrom(String borrowedFrom) {
+        this.borrowedFrom = borrowedFrom;
+    }
+
+    public String getBorrowedDate() {
+        return borrowedDate;
+    }
+
+    public void setBorrowedDate(String borrowedDate) {
+        this.borrowedDate = borrowedDate;
+    }
+
     public String getBitrate() {
         return bitrate;
     }
@@ -442,12 +522,20 @@ public class Item {
         this.bitrate = bitrate;
     }
 
-    public String getBoughtFrom() {
-        return boughtFrom;
+    public String getPurchasedFrom() {
+        return purchasedFrom;
     }
 
-    public void setBoughtFrom(String boughtFrom) {
-        this.boughtFrom = boughtFrom;
+    public void setPurchasedFrom(String purchasedFrom) {
+        this.purchasedFrom = purchasedFrom;
+    }
+
+    public String getPurchasedOn() {
+        return purchasedOn;
+    }
+
+    public void setPurchasedOn(String purchasedOn) {
+        this.purchasedOn = purchasedOn;
     }
 
     public int getSizeBytes() {
