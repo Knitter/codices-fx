@@ -145,14 +145,8 @@ SOFTWARE.
                         <Tooltip text="Tools" />
                     </tooltip>
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Export CSV" />
-                        <MenuItem mnemonicParsing="false" text="Export HTML" />
-                        <MenuItem mnemonicParsing="false" text="Export HTML (Single File)" />
-                        <MenuItem mnemonicParsing="false" text="Export JSON" />
-                        <SeparatorMenuItem />
-                        <MenuItem mnemonicParsing="false" text="Import CSV" />
-                        <MenuItem mnemonicParsing="false" text="Import BookBuddy CSV" />
-                        <MenuItem mnemonicParsing="false" text="Import BookBuddy HTML" />
+                        <MenuItem mnemonicParsing="false" text="Import From ..." onAction="#showImportDialog" />
+                        <MenuItem mnemonicParsing="false" text="Export To ..." onAction="#showExportDialog" />
                     </items>
                 </MenuButton>
                 <Button id="settingsBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#showSettings" textOverrun="CLIP">
@@ -182,7 +176,6 @@ SOFTWARE.
                 <BorderPane fx:id="contentContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" />
             </masterNode>
             <detailNode>
-                <fx:include source="book-details.fxml"/>
             </detailNode>
         </MasterDetailPane>
     </center>

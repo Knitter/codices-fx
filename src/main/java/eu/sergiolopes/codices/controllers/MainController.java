@@ -31,7 +31,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -48,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MainController extends Controller implements Initializable {
+public class MainController extends Controller {
 
     private ItemType showing = ItemType.PAPER_BOOK;
 
@@ -60,6 +59,24 @@ public class MainController extends Controller implements Initializable {
     private boolean isSearching;
     private ObservableList<Item> selectedItems;
 
+    private BookController bookDetailsPane;
+    private EbookController ebookDetailsPane;
+    private AudioBookController audiobookDetailsPane;
+
+    @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
+    @FXML
+    private Label itemTitle;
+    @FXML
+    private Label itemAuthor;
+    @FXML
+    private Label itemPublisher;
+    @FXML
+    private Label itemDate;
+    @FXML
+    private Label itemDescription;
     @FXML
     private BorderPane contentContainer;
     @FXML
@@ -75,6 +92,10 @@ public class MainController extends Controller implements Initializable {
         super(vm, fxml);
         isSearching = false;
         itemRepository = new ItemRepository(vm.getConnection());
+
+        bookDetailsPane = new BookController();
+        ebookDetailsPane = new EbookController();
+        audiobookDetailsPane = new AudioBookController();
     }
 
     @Override
@@ -135,8 +156,8 @@ public class MainController extends Controller implements Initializable {
         getManager().showSeriesWindow();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    private void initialize() {
         items = new FilteredTableView<>();
         items.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> displaySelectedItem(newValue));
 
@@ -241,12 +262,36 @@ public class MainController extends Controller implements Initializable {
         //TODO: ...
     }
 
+    /**
+     * Shows a details pane for the selected item, or hides the details pane if no item is selected.
+     *
+     * @param selected
+     */
     private void displaySelectedItem(Item selected) {
         if (selected == null) {
             mainMasterDetailView.setShowDetailNode(false);
             return;
         }
 
+        if (showing == ItemType.EBOOK) {
+            ebookDetailsPane.setDetailsData(selected);
+            mainMasterDetailView.setDetailNode(ebookDetailsPane);
+        } else if (showing == ItemType.PAPER_BOOK) {
+            bookDetailsPane.setDetailsData(selected);
+            mainMasterDetailView.setDetailNode(bookDetailsPane);
+        } else {
+            audiobookDetailsPane.setDetailsData(selected);
+            mainMasterDetailView.setDetailNode(audiobookDetailsPane);
+        }
+
         mainMasterDetailView.setShowDetailNode(true);
+    }
+
+    public void showImportDialog() {
+        getManager().showImportDialog();
+    }
+
+    public void showExportDialog() {
+        //TODO: ...
     }
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<fx:root type="javafx.scene.layout.BorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <HBox prefHeight="40.0" prefWidth="600.0" BorderPane.alignment="CENTER" />
+    </top>
+    <center>
+        <AnchorPane prefHeight="345.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="title" layoutX="22.0" layoutY="14.0" text="&lt;title&gt;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                    <font>
+                        <Font size="36.0" />
+                    </font>
+                </Label>
+                <HBox layoutX="22.0" layoutY="172.0" prefWidth="200.0" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="85.0">
+                    <children>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="86.0">
+                            <image>
+                                <Image url="@../icons/ballpen.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="by" />
+                        <Label fx:id="author" text="&lt;author&gt;" />
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="86.0">
+                            <image>
+                                <Image url="@../icons/building-store.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="published by" />
+                        <Label fx:id="publisher" text="&lt;publiser&gt;" />
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="86.0">
+                            <image>
+                                <Image url="@../icons/calendar-event.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="date" text="&lt;date/year&gt;" AnchorPane.topAnchor="85.0" />
+                    </children>
+                </HBox>
+                <Label fx:id="description" layoutX="15.0" layoutY="68.0" text="&lt;Plot/Description&gt;" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="107.0" />
+            </children>
+        </AnchorPane>
+    </center>
+</fx:root>
