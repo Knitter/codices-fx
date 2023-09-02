@@ -3,7 +3,6 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import org.controlsfx.control.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
     <center>
@@ -11,7 +10,12 @@
             <tabs>
                 <Tab text="Settings">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"></AnchorPane>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="23.0" layoutY="65.0" text="Database" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="14.0" />
+                        <Button layoutX="528.0" layoutY="10.0" mnemonicParsing="false" text="Button" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                        <TextField layoutX="72.0" layoutY="10.0" prefHeight="25.0" prefWidth="420.0" AnchorPane.leftAnchor="90.0" AnchorPane.topAnchor="10.0" />
+                     </children></AnchorPane>
                     </content>
                 </Tab>
                 <Tab text="Genres">
@@ -21,7 +25,16 @@
                 </Tab>
                 <Tab text="Book Formats">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="10.0" layoutY="14.0" text="Audio Books" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="14.0" />
+                                <Label layoutX="10.0" layoutY="47.0" text="eBooks" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="47.0" />
+                                <Label layoutX="11.0" layoutY="80.0" text="Paper Books" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="80.0" />
+                                <TextField layoutX="169.0" layoutY="15.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <TextField layoutX="108.0" layoutY="118.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="43.0" />
+                                <TextField layoutX="60.0" layoutY="96.0" prefHeight="25.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="76.0" />
+                            </children>
+                        </AnchorPane>
                     </content>
                 </Tab>
             </tabs>
@@ -41,6 +54,9 @@
                     </HBox.margin>
                 </Button>
             </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" />
+         </BorderPane.margin>
         </HBox>
     </bottom>
 </BorderPane>

@@ -29,6 +29,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -76,5 +77,9 @@ public class CodicesAppLauncher extends Application {
         }
 
         return null;
+    }
+
+    private String getSettingsFile() {
+        return System.getProperty("user.home") + System.getProperty("file.separator") + ".codices.xml";
     }
 }

@@ -1,6 +1,7 @@
 module eu.sergiolopes.codices.desktop {
     requires java.sql;
     requires org.xerial.sqlitejdbc;
+    requires com.opencsv;
     requires javafx.controls;
     requires javafx.fxml;
     requires org.controlsfx.controls;

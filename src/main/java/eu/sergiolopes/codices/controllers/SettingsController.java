@@ -24,18 +24,13 @@
  */
 package eu.sergiolopes.codices.controllers;
 
-import eu.sergiolopes.codices.models.Author;
-import eu.sergiolopes.codices.repositories.AuthorRepository;
 import eu.sergiolopes.codices.view.ViewManager;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class SettingsController extends Controller {
@@ -62,11 +57,20 @@ public class SettingsController extends Controller {
     }
 
     public void saveChanges() {
-        //TODO: ...
+        try {
+            appSettings.storeToXML(new FileOutputStream(getSettingsFile()), "Codices APP settings");
+        } catch (IOException e) {
+            //TODO: Proper error handling
+            throw new RuntimeException(e);
+        }
     }
 
     public void closeWindow() {
         getManager().closeCurrentStage();
+    }
+
+    private String getSettingsFile() {
+        return System.getProperty("user.home") + System.getProperty("file.separator") + ".codices.xml";
     }
 
 }
