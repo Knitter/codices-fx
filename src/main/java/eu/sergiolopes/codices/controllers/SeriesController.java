@@ -30,7 +30,6 @@ import eu.sergiolopes.codices.view.ViewManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
@@ -38,7 +37,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class SeriesController extends Controller implements Initializable {
+public class SeriesController extends Controller {
 
     private static final int MAX_BOOK_COUNT = 2000;
 
@@ -46,6 +45,10 @@ public class SeriesController extends Controller implements Initializable {
     private ObservableList<Series> bookSeries;
     private boolean isSearching;
 
+    @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
     @FXML
     private ListView<Series> series;
     @FXML
@@ -68,8 +71,8 @@ public class SeriesController extends Controller implements Initializable {
         return "Manage Series";
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    private void initialize() {
         bookSeries = seriesRepository.findAll();
         bookCount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, MAX_BOOK_COUNT));
 

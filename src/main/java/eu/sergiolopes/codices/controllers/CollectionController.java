@@ -25,31 +25,31 @@
 package eu.sergiolopes.codices.controllers;
 
 import eu.sergiolopes.codices.models.Collection;
-import eu.sergiolopes.codices.models.Series;
 import eu.sergiolopes.codices.repositories.CollectionRepository;
 import eu.sergiolopes.codices.view.ViewManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class CollectionController extends Controller implements Initializable {
+public class CollectionController extends Controller {
 
     private CollectionRepository collectionRepository;
-
-    @FXML
-    private ListView<Collection> collections;
     private ObservableList<Collection> bookCollections;
     private boolean isSearching;
 
+    @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
+    @FXML
+    private ListView<Collection> collections;
     @FXML
     private TextField name;
     @FXML
@@ -72,8 +72,8 @@ public class CollectionController extends Controller implements Initializable {
         return "Manage Collections";
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    private void initialize() {
         bookCollections = collectionRepository.findAll();
         publishYear.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, LocalDate.now().getYear()));
 

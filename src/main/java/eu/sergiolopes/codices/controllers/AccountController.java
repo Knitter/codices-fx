@@ -43,6 +43,10 @@ public class AccountController extends Controller implements Initializable {
     private AccountRepository accountRepository;
 
     @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
+    @FXML
     private ListView<Account> accounts;
 
 //    @FXML

@@ -25,13 +25,11 @@
 package eu.sergiolopes.codices.controllers;
 
 import eu.sergiolopes.codices.models.Author;
-import eu.sergiolopes.codices.models.Series;
 import eu.sergiolopes.codices.repositories.AuthorRepository;
 import eu.sergiolopes.codices.view.ViewManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
@@ -39,12 +37,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class AuthorController extends Controller implements Initializable {
+public class AuthorController extends Controller {
 
     private AuthorRepository authorRepository;
     private ObservableList<Author> bookAuthors;
     private boolean isSearching;
 
+    @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
     @FXML
     private ListView<Author> authors;
     @FXML
@@ -71,8 +73,8 @@ public class AuthorController extends Controller implements Initializable {
         return "Manage Authors";
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    private void initialize() {
         bookAuthors = authorRepository.findAll();
 
         authors.setCellFactory(param -> {

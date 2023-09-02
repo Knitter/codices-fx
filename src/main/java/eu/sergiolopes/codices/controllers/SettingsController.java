@@ -38,7 +38,14 @@ import javafx.scene.image.ImageView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class SettingsController extends Controller implements Initializable {
+public class SettingsController extends Controller {
+
+    private Properties appSettings;
+
+    @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
 
     public SettingsController(ViewManager vm, String fxml) {
         super(vm, fxml);
@@ -49,8 +56,8 @@ public class SettingsController extends Controller implements Initializable {
         return "Codices Settings";
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    private void initialize() {
         //TODO: ...
     }
 

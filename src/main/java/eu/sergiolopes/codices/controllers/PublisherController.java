@@ -25,26 +25,27 @@
 package eu.sergiolopes.codices.controllers;
 
 import eu.sergiolopes.codices.models.Publisher;
-import eu.sergiolopes.codices.models.Series;
 import eu.sergiolopes.codices.repositories.PublisherRepository;
 import eu.sergiolopes.codices.view.ViewManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class PublisherController extends Controller implements Initializable {
+public class PublisherController extends Controller {
 
     private PublisherRepository publisherRepository;
     private ObservableList<Publisher> bookPublishers;
     private boolean isSearching;
 
+    @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
     @FXML
     private ListView<Publisher> publishers;
     @FXML
@@ -67,8 +68,8 @@ public class PublisherController extends Controller implements Initializable {
         return "Manage Publishers";
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    private void initialize() {
         bookPublishers = publisherRepository.findAll();
         publishers.setCellFactory(param -> {
             //TODO: handle update and pending changes
