@@ -25,11 +25,12 @@
 package eu.sergiolopes.codices.view;
 
 import eu.sergiolopes.codices.controllers.*;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -57,10 +58,10 @@ public class ViewManager {
 
     public void showMainWindow() {
         Controller controller = new MainController(this, "main-view.fxml");
-        initialize(controller);
+        initialize(controller, true);
     }
 
-    private void initialize(Controller controller) {
+    private void initialize(Controller controller, boolean fullScreen) {
         URL path = getClass().getResource(controller.getFxml());
 
         FXMLLoader fxmlLoader = new FXMLLoader(path);
@@ -79,10 +80,21 @@ public class ViewManager {
 
         Stage stage = new Stage();
         stages.add(stage);
+        controller.setStage(stage);
 
+        if (fullScreen) {
+            Screen screen = Screen.getPrimary();
+            Rectangle2D bounds = screen.getVisualBounds();
+
+            stage.setX(bounds.getMinX());
+            stage.setY(bounds.getMinY());
+            stage.setWidth(bounds.getWidth());
+            stage.setHeight(bounds.getHeight());
+        }
+
+        stage.setMaximized(fullScreen);
         stage.setTitle(controller.getTitle());
         stage.setScene(scene);
-        controller.setStage(stage);
         stage.show();
     }
 
@@ -158,6 +170,10 @@ public class ViewManager {
         //TODO: ...
     }
 
+    public void showImportDialog() {
+        showModal(new ImportDialogController(this));
+    }
+
     private void showModal(Controller controller) {
         //TODO: share with this.initialize()
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(controller.getFxml()));
@@ -178,7 +194,7 @@ public class ViewManager {
 
         stage.setTitle(controller.getTitle());
         stage.setScene(scene);
-        stage.setAlwaysOnTop(true);
+        //TODO: stage.setAlwaysOnTop(true);
         stage.setResizable(false);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(stages.get(0).getScene().getWindow());
