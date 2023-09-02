@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="163.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <ChoiceBox fx:id="importFormat" layoutX="85.0" layoutY="58.0" prefWidth="150.0" AnchorPane.leftAnchor="90.0" AnchorPane.topAnchor="10.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="BookBuddy CSV" />
+                    <String fx:value="Calibre" />
+                    <String fx:value="Codices CSV" />
+                    <String fx:value="Codices JSON" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Label layoutX="14.0" layoutY="14.0" text="Format" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="14.0" />
+        <Label layoutX="29.0" layoutY="51.0" text="File" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="47.0" />
+        <TextField fx:id="importFile" layoutX="91.0" layoutY="47.0" prefHeight="25.0" prefWidth="420.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="43.0" />
+        <Button layoutX="527.0" layoutY="47.0" mnemonicParsing="false" onAction="#browseFiles" text="Browse ..." AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="43.0" />
+        <Button layoutX="534.0" layoutY="361.0" mnemonicParsing="false" onAction="#close" text="Close" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+        <Button layoutX="90.0" layoutY="81.0" mnemonicParsing="false" onAction="#processFile" text="Import" AnchorPane.leftAnchor="90.0" AnchorPane.topAnchor="76.0" />
+    </children>
+</AnchorPane>
