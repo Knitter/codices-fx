@@ -17,76 +17,183 @@
  */
 package eu.sergiolopes.codices.controllers;
 
-import eu.sergiolopes.codices.models.Author;
-import eu.sergiolopes.codices.models.Item;
-import eu.sergiolopes.codices.models.Publisher;
+import eu.sergiolopes.codices.models.Series;
+import eu.sergiolopes.codices.repositories.SeriesRepository;
+import eu.sergiolopes.codices.view.ViewManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.ResourceBundle;
 
-public class AudioBookController extends BorderPane {
+public class AudiobookController extends Controller {
 
-    private Item book;
-    @FXML
-    private Label itemTitle;
-    @FXML
-    private Label itemAuthor;
-    @FXML
-    private Label itemPublisher;
-    @FXML
-    private Label itemDate;
-    @FXML
-    private Label itemDescription;
+    private static final int MAX_BOOK_COUNT = 2000;
 
-    public AudioBookController() {
-        URL path = getClass().getResource("audiobook-details.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader(path);
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
+    private SeriesRepository seriesRepository;
+    private ObservableList<Series> bookSeries;
+    private boolean isSearching;
 
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
+    @FXML
+    private URL location;
+    @FXML
+    private ResourceBundle resources;
+    @FXML
+    private ListView<Series> series;
+    @FXML
+    private TextField name;
+    @FXML
+    private Spinner<Integer> bookCount;
+    @FXML
+    private CheckBox completed;
+    @FXML
+    private TextField searchField;
+
+    public AudiobookController(ViewManager vm, String fxml) {
+        super(vm, fxml);
+        isSearching = false;
+        seriesRepository = new SeriesRepository(vm.getConnection());
     }
 
-    private void clearDetailsData() {
-        //TODO: ... check if needed, delete if not
+    @Override
+    public String getTitle() {
+        return "Manage Series";
     }
 
-    public void setDetailsData(Item book) {
-        this.book = book;
+    @FXML
+    private void initialize() {
+        bookSeries = seriesRepository.findAll();
+        bookCount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, MAX_BOOK_COUNT));
 
-        itemTitle.setText(book.getTitle());
-        List<Author> authors = book.getAuthors();
-        String authorsString = "?";
-        if (authors != null && !authors.isEmpty()) {
-            List names = new ArrayList(authors.size());
-            for (Author author : authors) {
-                names.add(author.getFullName());
+        series.setCellFactory(param -> {
+            //TODO: handle update and pending changes
+            return new ListCell<>() {
+                @Override
+                public void updateItem(Series series, boolean empty) {
+                    super.updateItem(series, empty);
+                    if (empty || series == null) {
+                        setText(null);
+                        setGraphic(null);
+                        return;
+                    }
+
+                    setText(series.getName());
+                }
+            };
+        });
+
+        series.setItems(bookSeries);
+        series.setOnMouseClicked(event -> {
+            Series selected = series.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                return;
             }
 
-            authorsString = String.join("; ", names);
-        }
-        itemAuthor.setText("by " + authorsString);
+            setDetailsPanelData(selected.getName(), selected.getBookCount(), selected.isCompleted());
+        });
 
-        Publisher publisher = book.getPublisher();
-        if (publisher != null) {
-            itemPublisher.setText("published by " + publisher.getName());
+        if (!series.getItems().isEmpty()) {
+            Series first = series.getItems().get(0);
+
+            setDetailsPanelData(first.getName(), first.getBookCount(), first.isCompleted());
+            series.getSelectionModel().selectFirst();
+        }
+    }
+
+    public void addSeries() {
+        if (isSearching) {
+            searchField.setText("");
+            isSearching = false;
+            series.setItems(bookSeries);
         }
 
-        String description = book.getPlot() != null ? book.getPlot() : "";
-        if (description.isBlank()) {
-            description = "No description provided.";
+        emptyDetailsPanelData();
+        Series newSeries = new Series("<new series>");
+
+        bookSeries.add(newSeries);
+        setDetailsPanelData(newSeries.getName(), newSeries.getBookCount(), newSeries.isCompleted());
+        series.getSelectionModel().selectLast();
+    }
+
+    public void deleteSelected() {
+        MultipleSelectionModel<Series> selectionModel = series.getSelectionModel();
+        Series selected = selectionModel.getSelectedItem();
+        if (selected == null) {
+            return;
         }
 
-        itemDescription.setText(description);
+        int idx = selectionModel.getSelectedIndex();
+        selectionModel.clearSelection();
+
+        bookSeries.remove(selected);
+        series.getItems().remove(idx);
+        seriesRepository.delete(selected);
+
+        emptyDetailsPanelData();
+        if (idx - 1 >= 0) {
+            selectionModel.select(idx - 1);
+            setDetailsPanelData(selected.getName(), selected.getBookCount(), selected.isCompleted());
+        }
+    }
+
+    public void saveChanges() {
+        //TODO: Add validation
+        Series updatedSeries = series.getSelectionModel().getSelectedItem();
+        if (updatedSeries == null) {
+            return;
+        }
+
+        String newText = name.getText();
+        if (newText != null) {
+            newText = newText.trim();
+        }
+
+        updatedSeries.setName(newText);
+        updatedSeries.setBookCount(bookCount.getValueFactory().getValue());
+        updatedSeries.setCompleted(completed.isSelected());
+
+        seriesRepository.save(updatedSeries);
+        series.refresh();
+    }
+
+    public void closeWindow() {
+        getManager().closeCurrentStage();
+    }
+
+    public void search(KeyEvent event) {
+        if (!isSearching) {
+            series.getSelectionModel().clearSelection();
+            isSearching = true;
+        }
+
+        String searchString = searchField.getText().trim();
+        if (searchString.isBlank()) {
+            series.setItems(bookSeries);
+            isSearching = false;
+            return;
+        }
+
+        ObservableList<Series> filtered = FXCollections.observableList(new ArrayList<>());
+        for (var current : bookSeries) {
+            if (current.getName().contains(searchString)) {
+                filtered.add(current);
+            }
+        }
+
+        series.setItems(filtered);
+    }
+
+    private void setDetailsPanelData(String name, int bookCount, boolean completed) {
+        this.name.setText(name);
+        this.bookCount.getValueFactory().setValue(bookCount);
+        this.completed.setSelected(completed);
+    }
+
+    private void emptyDetailsPanelData() {
+        setDetailsPanelData("", 0, false);
     }
 }

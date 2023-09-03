@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 /*
  * Codices-fx, personal library manager (ebooks, audio & paper books).
@@ -19,15 +20,132 @@
  */
 -->
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="eu.sergiolopes.codices.view.AddBook"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<BorderPane prefHeight="640.0" prefWidth="840.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <GridPane hgap="10.0" BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints />
+            </rowConstraints>
+            <children>
+                <Label text="Title" />
+                <Label text="Subtitle" GridPane.columnIndex="2" />
+                <TextField fx:id="title" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                <TextField fx:id="subtitle" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                <Label text="Original Title" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                <Label text="Author" GridPane.rowIndex="4" />
+                <Label text="Series" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label text="Order" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                <Label text="Volume" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                <TextField fx:id="volume" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                <Label text="Publisher" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                <Label text="Publish Date" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                <Label text="Publish Year" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                <DatePicker fx:id="publishDate" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                <Label text="Plot/Description" GridPane.rowIndex="18" />
+                <Label text="Review" GridPane.columnIndex="2" GridPane.rowIndex="18" />
+                <TextArea fx:id="plot" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="19" GridPane.rowSpan="4" />
+                <TextArea fx:id="review" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="19" GridPane.rowSpan="4" />
+                <TextField fx:id="originalTitle" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+                <Label text="Pages" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                <Label text="Language" GridPane.rowIndex="2" />
+                <Label text="Dimensions" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+                <TextField fx:id="edition" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label text="Edition" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Label text="Cover" GridPane.rowIndex="8" />
+                <TextField fx:id="dimensions" GridPane.columnIndex="2" GridPane.rowIndex="9" />
+                <Label text="URL" GridPane.columnIndex="2" GridPane.rowIndex="12" />
+                <Label text="Purchased From" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+                <Label text="Purchased Date" GridPane.columnIndex="2" GridPane.rowIndex="10" />
+                <Label text="Location" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+                <Label text="Format" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+                <Label text="Loaned To" GridPane.columnIndex="2" GridPane.rowIndex="16" />
+                <Label text="Loaned Date" GridPane.columnIndex="3" GridPane.rowIndex="16" />
+                <Label text="Borrowed From" GridPane.rowIndex="16" />
+                <Label text="Borrowed Date" GridPane.columnIndex="1" GridPane.rowIndex="16" />
+                <Label text="Duplicates" GridPane.columnIndex="3" GridPane.rowIndex="12" />
+                <Label text="Copies" GridPane.columnIndex="3" GridPane.rowIndex="10" />
+                <CheckBox fx:id="read" mnemonicParsing="false" text="Read" GridPane.columnIndex="3" />
+                <Label text="ISBN" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                <Label text="Collection" GridPane.columnIndex="3" GridPane.rowIndex="14" />
+                <Label text="Illustrator" GridPane.columnIndex="2" GridPane.rowIndex="14" />
+                <SearchableComboBox fx:id="series" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <SearchableComboBox fx:id="author" GridPane.rowIndex="5" />
+                <SearchableComboBox fx:id="publisher" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <SearchableComboBox fx:id="format" GridPane.columnIndex="3" GridPane.rowIndex="9" />
+                <SearchableComboBox fx:id="language" GridPane.rowIndex="3" />
+                <CheckComboBox fx:id="genre" GridPane.rowIndex="7" />
+                <Label text="Genre" GridPane.rowIndex="6" />
+                <Pane prefHeight="170.0" prefWidth="120.0" style="-fx-border-color: #9ea4b2; -fx-border-style: solid; -fx-border-width: 1.0; -fx-border-radius: 4.0;" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="9" GridPane.rowSpan="7" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                    <children>
+                        <ImageView fx:id="cover" fitHeight="170.0" fitWidth="120.0" layoutX="39.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" />
+                    </children>
+                </Pane>
+            <TextField fx:id="isbn" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+            <TextField fx:id="url" GridPane.columnIndex="2" GridPane.rowIndex="13" />
+            <TextField fx:id="physicalLocation" GridPane.columnIndex="1" GridPane.rowIndex="15" />
+            <DatePicker fx:id="borrowedDate" GridPane.columnIndex="1" GridPane.rowIndex="17" />
+            <DatePicker fx:id="loanedDate" GridPane.columnIndex="3" GridPane.rowIndex="17" />
+            <SearchableComboBox fx:id="purchasedFrom" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+            <SearchableComboBox fx:id="duplicates" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="13" />
+            <SearchableComboBox fx:id="illustrator" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="15" />
+            <SearchableComboBox fx:id="collection" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="15" />
+            <SearchableComboBox fx:id="borrowedFrom" prefWidth="150.0" GridPane.rowIndex="17" />
+            <SearchableComboBox fx:id="loanedTo" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="17" />
+            <DatePicker fx:id="purchaseDate" GridPane.columnIndex="2" GridPane.rowIndex="11" />
+            <Spinner fx:id="publishYear" editable="true" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+            <Spinner fx:id="copies" editable="true" GridPane.columnIndex="3" GridPane.rowIndex="11" />
+            <Spinner fx:id="order" editable="true" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <Spinner fx:id="pages" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            </children>
+            <padding>
+                <Insets left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </GridPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button mnemonicParsing="false" onAction="#saveChanges" text="Save" />
+                <Button mnemonicParsing="false" onAction="#closeWindow" text="Close" />
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </HBox>
+    </bottom>
+</BorderPane>

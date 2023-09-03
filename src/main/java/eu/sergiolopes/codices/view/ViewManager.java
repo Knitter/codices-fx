@@ -167,7 +167,7 @@ public class ViewManager {
     }
 
     public void showPaperBookWindow() {
-        //TODO: ...
+        showModal(new BookController(this));
     }
 
     public void showImportDialog() {
