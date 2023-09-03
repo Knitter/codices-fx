@@ -53,6 +53,10 @@ public class SeriesController extends Controller {
     @FXML
     private TextField searchField;
 
+    public SeriesController(ViewManager vm) {
+        this(vm, "series.fxml");
+    }
+
     public SeriesController(ViewManager vm, String fxml) {
         super(vm, fxml);
         isSearching = false;

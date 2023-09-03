@@ -34,6 +34,9 @@ public class SettingsController extends Controller {
     private URL location;
     @FXML
     private ResourceBundle resources;
+    public SettingsController(ViewManager vm) {
+        this(vm, "settings.fxml");
+    }
 
     public SettingsController(ViewManager vm, String fxml) {
         super(vm, fxml);

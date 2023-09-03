@@ -81,6 +81,10 @@ public class MainController extends Controller {
     @FXML
     private SegmentedBar<SegmentedBar.Segment> bookSegments;
 
+    public MainController(ViewManager vm) {
+        this(vm, "main-view.fxml");
+    }
+
     public MainController(ViewManager vm, String fxml) {
         super(vm, fxml);
         isSearching = false;

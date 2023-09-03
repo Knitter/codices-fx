@@ -54,6 +54,10 @@ public class CollectionController extends Controller {
     @FXML
     private TextField searchField;
 
+    public CollectionController(ViewManager vm) {
+        this(vm, "collections.fxml");
+    }
+
     public CollectionController(ViewManager vm, String fxml) {
         super(vm, fxml);
         isSearching = false;

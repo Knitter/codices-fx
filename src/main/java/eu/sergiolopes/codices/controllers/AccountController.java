@@ -53,6 +53,10 @@ public class AccountController extends Controller implements Initializable {
 //    @FXML
 //    private TextArea biography;
 
+    public AccountController(ViewManager vm) {
+        this(vm, "account.fxml");
+    }
+
     public AccountController(ViewManager vm, String fxml) {
         super(vm, fxml);
         accountRepository = new AccountRepository(vm.getConnection());

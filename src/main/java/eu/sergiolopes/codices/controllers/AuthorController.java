@@ -55,6 +55,10 @@ public class AuthorController extends Controller {
     @FXML
     private TextField searchField;
 
+    public AuthorController(ViewManager vm) {
+        this(vm, "authors.fxml");
+    }
+
     public AuthorController(ViewManager vm, String fxml) {
         super(vm, fxml);
         isSearching = false;

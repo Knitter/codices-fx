@@ -57,7 +57,7 @@ public class ViewManager {
     }
 
     public void showMainWindow() {
-        Controller controller = new MainController(this, "main-view.fxml");
+        Controller controller = new MainController(this);
         initialize(controller, true);
     }
 
@@ -139,23 +139,23 @@ public class ViewManager {
     }
 
     public void showAuthorWindow() {
-        showModal(new AuthorController(this, "authors.fxml"));
+        showModal(new AuthorController(this));
     }
 
     public void showCollectionsWindow() {
-        showModal(new CollectionController(this, "collections.fxml"));
+        showModal(new CollectionController(this));
     }
 
     public void showPublishersWindow() {
-        showModal(new PublisherController(this, "publishers.fxml"));
+        showModal(new PublisherController(this));
     }
 
     public void showSeriesWindow() {
-        showModal(new SeriesController(this, "series.fxml"));
+        showModal(new SeriesController(this));
     }
 
     public void showSettingsWindow() {
-        showModal(new SettingsController(this, "settings.fxml"));
+        showModal(new SettingsController(this));
     }
 
     public void showEbookWindow() {

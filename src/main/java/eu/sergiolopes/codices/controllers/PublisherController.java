@@ -50,6 +50,10 @@ public class PublisherController extends Controller {
     @FXML
     private TextField searchField;
 
+    public PublisherController(ViewManager vm) {
+        this(vm, "publishers.fxml");
+    }
+
     public PublisherController(ViewManager vm, String fxml) {
         super(vm, fxml);
         isSearching = false;
