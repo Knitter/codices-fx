@@ -77,10 +77,11 @@ CREATE TABLE genre
 
 CREATE TABLE format
 (
+    id        INTEGER PRIMARY KEY,
     type      TEXT    NOT NULL,
     name      TEXT    NOT NULL,
     ownedById INTEGER NOT NULL,
-    PRIMARY KEY (type, name, ownedById),
+    UNIQUE (type, name),
     FOREIGN KEY (ownedById) REFERENCES account (id)
 );
 
