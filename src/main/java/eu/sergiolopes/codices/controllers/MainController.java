@@ -52,9 +52,9 @@ public class MainController extends Controller {
     private boolean isSearching;
     private ObservableList<Item> selectedItems;
 
-    private BookController bookDetailsPane;
-    private EbookController ebookDetailsPane;
-    private AudioBookController audiobookDetailsPane;
+    private BookDetailsController bookDetailsPane;
+    private EbookDetailsController ebookDetailsPane;
+    private AudiobookDetailsController audiobookDetailsPane;
 
     @FXML
     private URL location;
@@ -90,9 +90,9 @@ public class MainController extends Controller {
         isSearching = false;
         itemRepository = new ItemRepository(vm.getConnection());
 
-        bookDetailsPane = new BookController();
-        ebookDetailsPane = new EbookController();
-        audiobookDetailsPane = new AudioBookController();
+        bookDetailsPane = new BookDetailsController();
+        ebookDetailsPane = new EbookDetailsController();
+        audiobookDetailsPane = new AudiobookDetailsController();
     }
 
     @Override

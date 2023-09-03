@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 /*
  * Codices-fx, personal library manager (ebooks, audio & paper books).
@@ -24,7 +25,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<fx:root type="javafx.scene.layout.BorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="585.0" prefWidth="613.0" type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <HBox prefHeight="40.0" prefWidth="600.0" BorderPane.alignment="CENTER" />
     </top>
@@ -36,7 +37,7 @@
                         <Font size="36.0" />
                     </font>
                 </Label>
-                <HBox layoutX="22.0" layoutY="172.0" prefWidth="200.0" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="85.0">
+                <HBox layoutX="22.0" layoutY="172.0" prefWidth="200.0" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0">
                     <children>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="86.0">
                             <image>
@@ -60,7 +61,27 @@
                         <Label fx:id="date" text="&lt;date/year&gt;" AnchorPane.topAnchor="85.0" />
                     </children>
                 </HBox>
-                <Label fx:id="description" layoutX="15.0" layoutY="68.0" text="&lt;Plot/Description&gt;" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="107.0" />
+                <VBox layoutX="177.0" layoutY="112.0" spacing="5.0" AnchorPane.leftAnchor="135.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="115.0">
+                    <children>
+                        <Label text="Plot/Description">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="description" alignment="TOP_LEFT" text="&lt;plot/description&gt;" wrapText="true" />
+                        <Label text="Review">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="review" alignment="TOP_CENTER" text="&lt;review text&gt;" wrapText="true" />
+                    </children>
+                </VBox>
+            <Label layoutX="14.0" layoutY="63.0" text="&lt;series&gt;" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="63.0" />
+            <Pane layoutX="155.0" layoutY="258.0" prefHeight="170.0" prefWidth="120.0" style="-fx-border-color: #9ea4b2; -fx-border-style: solid; -fx-border-width: 1.0; -fx-border-radius: 4.0;" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="115.0">
+               <children>
+                      <ImageView fitHeight="170.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" />
+               </children></Pane>
             </children>
         </AnchorPane>
     </center>
