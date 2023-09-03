@@ -47,5 +47,10 @@ public abstract class Controller {
         return stage;
     }
 
+    public void closeWindow() {
+        getManager().closeCurrentStage();
+    }
+
     abstract public String getTitle();
+
 }
