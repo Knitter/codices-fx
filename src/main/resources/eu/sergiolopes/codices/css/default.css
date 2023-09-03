@@ -15,15 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-.menu-icon-button {
-    -fx-text-fill: #929dab;
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
-    -fx-background-radius: 0;
-    -fx-background-color: transparent;
-    -fx-font-size: 1em; /* 12 */
-    /*-fx-font-family:"Segoe UI", Helvetica, Arial, sans-serif;*/
+
+.item-img {
+    -fx-border-color: #090a0c;
+    -fx-border-style: solid;
+    -fx-border-width: 1.0;
+    -fx-border-radius: 4.0;
+    /*-fx-border-insets: 3;*/
 }
+
+/*.menu-icon-button {*/
+/*    -fx-text-fill: #929dab;*/
+/*    -fx-border-color: transparent;*/
+/*    -fx-border-width: 0;*/
+/*    -fx-background-radius: 0;*/
+/*    -fx-background-color: transparent;*/
+/*    -fx-font-size: 1em; !* 12 *!*/
+/*-fx-font-family:"Segoe UI", Helvetica, Arial, sans-serif;*/
+/*}*/
 
 /*.button:focused {*/
 /*    -fx-border-color: transparent, black;*/

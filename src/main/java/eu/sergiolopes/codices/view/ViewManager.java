@@ -132,10 +132,8 @@ public class ViewManager {
     }
 
     private void applyStylesTo(Scene scene) {
-        //scene.getStylesheets().clear();
-        //scene.getStylesheets().add(getClass().getResource("/eu/sergiolopes/codices/css/default.css").toExternalForm());
-        //scene.getStylesheets().add(getClass().getResource(ColorTheme.getCssPath(colorTheme)).toExternalForm());
-        //scene.getStylesheets().add(getClass().getResource(FontSize.getCssPath(fontSize)).toExternalForm());
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(getClass().getResource("/eu/sergiolopes/codices/css/default.css").toExternalForm());
     }
 
     public void showAuthorWindow() {
