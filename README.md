@@ -50,7 +50,7 @@ Currently used icons are provided by https://tabler-icons.io/.
 
 # License
 
-**Codices-fx** is licensed under an MIT license. Please check the
+**Codices-fx** is licensed under GNU GPL v3 license. Please check the
 [LICENSE](https://raw.githubusercontent.com/Knitter/codices-fx/main/LICENSE) file for more information.
 
 Copyright, 2023 Sérgio Lopes 
