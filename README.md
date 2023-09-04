@@ -17,7 +17,8 @@ and using Scala and the Play framework, [Codices-yii](https://github.com/Knitter
 > the branch is considered unstable and will often break (code may not compile).
 
 # Features
-List of features that  will be available in Codices-fx:
+
+List of features that will be available in Codices-fx:
 
 * Manage paper books, e-books and audiobooks
 * For each of the managed items, store:
@@ -43,6 +44,24 @@ List of features that  will be available in Codices-fx:
 * Import from CSV, BookBuddy CSV and HTML export files
 * Import from Calibre
 * Connect to https://openlibrary.org
+
+## Screenshots
+
+#### Main Window
+
+![Main window](docs/screens/01-main.png)
+
+##### Managing Authors
+
+![Managing authors](docs/screens/02-authors.png)
+
+##### Managing Series
+
+![Managing book series](docs/screens/03-series.png)
+
+##### New Book Dialog
+
+![Adding a new book](docs/screens/04-newbook.png)
 
 # Credits
 
